@@ -114,6 +114,10 @@ export default defineConfig({
           label: 'Blog',
           link: '/blog/',
         },
+        {
+          label: 'Network',
+          link: '/links/',
+        },
       ],
       lastUpdated: true,
       pagination: true,

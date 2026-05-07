@@ -1,0 +1,257 @@
+---
+import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
+
+interface PartnerLink {
+  slug: string;
+  title: string;
+  url: string;
+  description: string;
+  tagline: string;
+  thumbnail: string;
+  badge?: string;
+}
+
+const links: PartnerLink[] = [
+  {
+    slug: 'digitaluniverse-academy',
+    title: 'Digital Universe Academy',
+    url: 'https://digitaluniverse.academy',
+    description: 'Learn Claude Code from the ground up. Free, world-class AI training — courses, certificates, and hands-on projects with Claude.',
+    tagline: 'Master AI skills for the future.',
+    thumbnail: '/links/digitaluniverse-academy.png',
+    badge: 'Learn',
+  },
+  {
+    slug: 'db-agent',
+    title: 'Building Super Agents',
+    url: 'https://db-agent.app',
+    description: 'A 10-section wizard that helps operators and agencies design complete AI agent teams and generate deployment-ready specifications.',
+    tagline: 'Spec a complete AI agent team in one sitting.',
+    thumbnail: '/links/db-agent.png',
+    badge: 'Build',
+  },
+  {
+    slug: 'claude-code-plugins',
+    title: '6 Plugins Every Project Needs',
+    url: 'https://claude-code-plugins-self.vercel.app',
+    description: 'A curated collection of six essential Claude Code plugins selected from 10,000+ available options to accelerate software development.',
+    tagline: 'The 6 plugins that 100x every project.',
+    thumbnail: '/links/claude-code-plugins.png',
+    badge: 'Install',
+  },
+];
+---
+
+<StarlightPage
+  frontmatter={{
+    title: 'The DBAI network',
+    description: 'Sister sites and tools from the team behind HackerX. Learn Claude Code, build agent teams, install the plugins that 100x every project.',
+    template: 'doc',
+    tableOfContents: false,
+    pagefind: true,
+  }}
+>
+  <p class="hx-links-intro">
+    HackerX is one piece of a larger system. Here are the sister sites and tools we've shipped — each solves one part of the AI-native dev workflow.
+  </p>
+
+  <ul class="hx-links-grid">
+    {links.map((link) => (
+      <li class="hx-link-card">
+        <a href={link.url} target="_blank" rel="noopener" class="hx-link-thumb-wrap">
+          <img
+            src={link.thumbnail}
+            alt={`Screenshot of ${link.title}`}
+            loading="lazy"
+            decoding="async"
+            class="hx-link-thumb"
+          />
+          {link.badge && <span class="hx-link-badge">{link.badge}</span>}
+        </a>
+        <div class="hx-link-body">
+          <h2><a href={link.url} target="_blank" rel="noopener">{link.title}</a></h2>
+          <p class="hx-link-tagline">{link.tagline}</p>
+          <p class="hx-link-desc">{link.description}</p>
+          <p class="hx-link-url">
+            <a href={link.url} target="_blank" rel="noopener">{link.url.replace(/^https?:\/\//, '')} →</a>
+          </p>
+        </div>
+      </li>
+    ))}
+
+    <li class="hx-link-card hx-link-soon">
+      <div class="hx-link-thumb-wrap hx-link-thumb-placeholder">
+        <span class="hx-link-pulse" aria-hidden="true">●</span>
+        <span>More coming</span>
+      </div>
+      <div class="hx-link-body">
+        <h2>More coming soon</h2>
+        <p class="hx-link-desc">
+          We're building agent toolkits, prompt libraries, and a Claude Code certification track. Subscribe via the chatbot and we'll send the next launch.
+        </p>
+      </div>
+    </li>
+  </ul>
+
+  <hr/>
+
+  <section class="hx-links-cta">
+    <p>
+      Built something Claude Code-adjacent and want it featured here?
+      Open an issue on
+      <a href="https://github.com/zthebaron/hackerx/issues/new">github.com/zthebaron/hackerx</a>
+      with your URL and a one-line description.
+    </p>
+  </section>
+</StarlightPage>
+
+<style>
+  .hx-links-intro {
+    font-size: 1.05rem;
+    color: var(--sl-color-gray-2);
+    max-width: 60ch;
+    margin-top: 0;
+    margin-bottom: 2rem;
+  }
+  .hx-links-grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.25rem;
+  }
+  .hx-link-card {
+    margin: 0;
+    background: var(--sl-color-bg-sidebar);
+    border: 1px solid var(--sl-color-gray-5);
+    border-radius: 0.75rem;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: border-color 160ms ease, transform 160ms ease;
+  }
+  .hx-link-card:hover {
+    border-color: var(--sl-color-text-accent);
+    transform: translateY(-2px);
+  }
+  .hx-link-thumb-wrap {
+    position: relative;
+    display: block;
+    aspect-ratio: 1200 / 750;
+    overflow: hidden;
+    background: var(--sl-color-bg);
+    border-bottom: 1px solid var(--sl-color-gray-5);
+  }
+  .hx-link-thumb {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top center;
+    display: block;
+    transition: transform 220ms ease;
+  }
+  .hx-link-card:hover .hx-link-thumb {
+    transform: scale(1.02);
+  }
+  .hx-link-badge {
+    position: absolute;
+    top: 0.625rem;
+    left: 0.625rem;
+    padding: 0.2rem 0.625rem;
+    background: var(--sl-color-text-accent);
+    color: var(--sl-color-text-invert);
+    border-radius: 999px;
+    font-family: var(--__sl-font-mono);
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .hx-link-thumb-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.625rem;
+    color: var(--sl-color-gray-3);
+    font-family: var(--__sl-font-mono);
+    font-size: 0.85rem;
+    background:
+      repeating-linear-gradient(45deg, transparent 0 12px, var(--sl-color-bg-sidebar) 12px 24px),
+      var(--sl-color-bg);
+  }
+  .hx-link-pulse {
+    color: var(--sl-color-text-accent);
+    animation: hx-link-pulse 1.6s ease-in-out infinite;
+  }
+  @keyframes hx-link-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+  .hx-link-body {
+    padding: 1rem 1.1rem 1.1rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .hx-link-body h2 {
+    margin: 0;
+    font-size: 1.1rem;
+    line-height: 1.3;
+  }
+  .hx-link-body h2 a {
+    color: var(--sl-color-text);
+    text-decoration: none;
+  }
+  .hx-link-body h2 a:hover {
+    color: var(--sl-color-text-accent);
+  }
+  .hx-link-tagline {
+    margin: 0;
+    color: var(--sl-color-text-accent);
+    font-family: var(--__sl-font-mono);
+    font-size: 0.85rem;
+  }
+  .hx-link-desc {
+    margin: 0;
+    color: var(--sl-color-gray-2);
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+  .hx-link-url {
+    margin: auto 0 0;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--sl-color-gray-5);
+    font-family: var(--__sl-font-mono);
+    font-size: 0.78rem;
+  }
+  .hx-link-url a {
+    color: var(--sl-color-text-accent);
+    text-decoration: none;
+  }
+  .hx-link-url a:hover {
+    text-decoration: underline;
+  }
+  .hx-link-soon {
+    border-style: dashed;
+    background: var(--sl-color-bg);
+  }
+  .hx-link-soon:hover {
+    border-style: dashed;
+    transform: none;
+  }
+  .hx-links-cta {
+    margin-top: 2.5rem;
+    padding: 1rem 1.25rem;
+    background: var(--sl-color-bg-sidebar);
+    border: 1px solid var(--sl-color-gray-5);
+    border-radius: 0.5rem;
+    color: var(--sl-color-gray-2);
+    font-size: 0.9rem;
+  }
+  .hx-links-cta a {
+    color: var(--sl-color-text-accent);
+    font-weight: 600;
+  }
+</style>

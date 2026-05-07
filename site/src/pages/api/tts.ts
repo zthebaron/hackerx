@@ -50,16 +50,30 @@ async function resolveVoiceId(apiKey: string, requested?: string): Promise<strin
   }
 
   const targetName = (requested || DEFAULT_VOICE_NAME).toLowerCase();
+
+  // 1. Explicit override via env var wins for the default voice.
   const fromEnv = import.meta.env.ELEVENLABS_VOICE_ID;
   if (fromEnv && targetName === DEFAULT_VOICE_NAME.toLowerCase()) {
     return fromEnv;
+  }
+
+  // 2. Hardcoded KNOWN_VOICES wins next — this lets us pin a specific voice ID by
+  //    name even when the same name exists in the user's personal library with a
+  //    different ID (e.g. cloned voices that happen to share a name).
+  const known = KNOWN_VOICES[targetName];
+  if (known) {
+    if (targetName === DEFAULT_VOICE_NAME.toLowerCase()) {
+      cachedVoiceId = known;
+      cachedVoiceLookupAt = Date.now();
+    }
+    return known;
   }
 
   if (cachedVoiceId && targetName === DEFAULT_VOICE_NAME.toLowerCase() && Date.now() - cachedVoiceLookupAt < VOICE_CACHE_MS) {
     return cachedVoiceId;
   }
 
-  // Try the user's personal voice library first.
+  // 3. Try the user's personal voice library.
   try {
     const res = await fetch('https://api.elevenlabs.io/v1/voices', {
       headers: { 'xi-api-key': apiKey, Accept: 'application/json' },
@@ -79,7 +93,7 @@ async function resolveVoiceId(apiKey: string, requested?: string): Promise<strin
     console.error('personal voices lookup failed', err);
   }
 
-  // Try the shared (public) voice library — voices here can be used without explicit add for most accounts.
+  // 4. Last resort: shared (public) voice library.
   try {
     const url = new URL('https://api.elevenlabs.io/v1/shared-voices');
     url.searchParams.set('search', targetName);
@@ -100,16 +114,6 @@ async function resolveVoiceId(apiKey: string, requested?: string): Promise<strin
     }
   } catch (err) {
     console.error('shared voices lookup failed', err);
-  }
-
-  // Final fallback: known voice IDs from the ElevenLabs preset library.
-  const known = KNOWN_VOICES[targetName];
-  if (known) {
-    if (targetName === DEFAULT_VOICE_NAME.toLowerCase()) {
-      cachedVoiceId = known;
-      cachedVoiceLookupAt = Date.now();
-    }
-    return known;
   }
 
   return null;

@@ -11,8 +11,15 @@ Drop-in files you copy into your real project.
 ## How to use
 
 ```bash
-cp "Vibe Coder 100x/templates/CLAUDE.md" ~/your-project/CLAUDE.md
-cp "Vibe Coder 100x/templates/verification-checklist.md" ~/your-project/.github/PULL_REQUEST_TEMPLATE.md
+# After cloning hackerx
+cp hackerx/templates/CLAUDE.md ~/your-project/CLAUDE.md
+cp hackerx/templates/verification-checklist.md ~/your-project/.github/PULL_REQUEST_TEMPLATE.md
+```
+
+Or use the CLI to drop everything in at once:
+
+```bash
+npx hackerx init
 ```
 
 Edit each one to match your stack — the templates are starting points, not finished docs.

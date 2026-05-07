@@ -1,4 +1,4 @@
-# DBAI Blog Draft — Vibe Coder 100x
+# DBAI Blog Draft — HackerX
 
 Adapt this for your blog, newsletter, or LinkedIn post. Keep the voice; change the names.
 
@@ -60,7 +60,7 @@ That's the difference between vibe coding and product-level AI development.
 
 ## Where to learn the rest
 
-We turned this entire workflow into a course called **Vibe Coder 100x**:
+We turned this entire workflow into a course called **HackerX**:
 
 - The master prompt to paste at the start of every UI session.
 - A vocabulary cheat sheet that names every pattern you've been pointing at.
@@ -69,4 +69,4 @@ We turned this entire workflow into a course called **Vibe Coder 100x**:
 - A Claude Skill that maps vague requests to real patterns automatically.
 - Three full demonstrations from vague idea to shipped UI.
 
-[Link to the course]
+[hackerx.app](https://hackerx.app)

@@ -7,9 +7,14 @@ Two install locations — pick one.
 Installs the skill into a single repo. Your team gets it when they pull.
 
 ```bash
+# One-liner via the HackerX CLI:
+cd ~/path/to/your/project
+npx hackerx init --skill ui-pattern-picker
+
+# Or copy manually from the cloned course repo:
 cd ~/path/to/your/project
 mkdir -p .claude/skills/ui-pattern-picker
-cp "/path/to/Vibe Coder 100x/07-skills/ui-pattern-picker/SKILL.md" .claude/skills/ui-pattern-picker/SKILL.md
+cp ~/path/to/hackerx/07-skills/ui-pattern-picker/SKILL.md .claude/skills/ui-pattern-picker/SKILL.md
 ```
 
 Commit it:
@@ -24,8 +29,12 @@ git commit -m "Add ui-pattern-picker Claude skill"
 Installs the skill at your user level. Available in any Claude Code session you run.
 
 ```bash
+# Via the HackerX CLI:
+npx hackerx init --skill ui-pattern-picker --scope user
+
+# Or copy manually:
 mkdir -p ~/.claude/skills/ui-pattern-picker
-cp "/path/to/Vibe Coder 100x/07-skills/ui-pattern-picker/SKILL.md" ~/.claude/skills/ui-pattern-picker/SKILL.md
+cp ~/path/to/hackerx/07-skills/ui-pattern-picker/SKILL.md ~/.claude/skills/ui-pattern-picker/SKILL.md
 ```
 
 ## Verifying it loaded

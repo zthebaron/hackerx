@@ -1,10 +1,12 @@
-# Vibe Coder 100x
+# HackerX
 
-> A complete course on Vibe Coding — turning vague product ideas into clear, well-built UI using Claude Code as a design partner before a coding partner.
+> Ship UI 100x faster with Claude Code as your design partner. Stop asking it to "make it better." Name the pattern, get three options, ship the right one.
 
 Most people get stuck with AI coding tools because they know a screen feels cluttered, they know users need "some kind of menu thing," but they don't know whether to ask for a sidebar, command palette, accordion, drawer, tabs, popover, or split-pane layout.
 
-This course teaches you the language of modern UI/UX so you can prompt Claude Code with **outcomes**, not vague component names — and ship 100x faster.
+HackerX teaches you the language of modern UI/UX so you can prompt Claude Code with **outcomes**, not vague component names — and ship 100x faster.
+
+Live: [hackerx.app](https://hackerx.app)
 
 ---
 
@@ -81,4 +83,4 @@ That's the difference between **vibe coding** and **product-level AI development
 
 ---
 
-Built by DBAI. Last updated 2026-05-07.
+Built by [DBAI](https://digitalboutique.ai) · Architect [Tim De Vallee](https://digitalboutique.ai). Last updated 2026-05-07.

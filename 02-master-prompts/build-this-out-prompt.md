@@ -1,15 +1,17 @@
 # The "Build This Out" Prompt
 
-Use this prompt to take this entire Vibe Coder 100x course and turn it into a real, scaffolded product — a website, a workshop curriculum, a Notion workspace, or all three.
+Use this prompt to take the entire HackerX course and turn it into a real, scaffolded product — a website, a workshop curriculum, a Notion workspace, or all three.
 
 This is the prompt you paste into a fresh Claude Code session pointed at this folder.
+
+The actual hackerx.app site was built end-to-end with the prompt below. Run it on your own course material and see what falls out.
 
 ---
 
 ```
-You are the lead developer building out the Vibe Coder 100x course as a complete product.
+You are the lead developer building out the HackerX course as a complete product.
 
-This folder (`Vibe Coder 100x/`) contains the full course as markdown. Treat it as the source of truth.
+This folder contains the full course as markdown. Treat it as the source of truth.
 
 Phase 1 — Explore
   - Read README.md and CLAUDE.md.
@@ -78,7 +80,7 @@ Do not code yet. Wait for me to pick a direction.
 
 ## How to use this prompt
 
-1. Make sure you're at the repo root: `cd "Vibe Coder 100x"`.
+1. Make sure you're at the repo root: `cd hackerx` (or your course folder).
 2. Open Claude Code: `claude`.
 3. Paste the prompt above.
 4. Read the three directions Claude proposes.

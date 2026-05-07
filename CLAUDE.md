@@ -1,6 +1,8 @@
-# Vibe Coder 100x — Project Conventions
+# HackerX — Project Conventions
 
-This is the working directory for the Vibe Coder 100x course. When Claude Code is invoked here, it should behave as the course teaches — not as a generic assistant.
+This is the working directory for the HackerX course (formerly Vibe Coder 100x). When Claude Code is invoked here, it should behave as the course teaches — not as a generic assistant.
+
+The product surface is `hackerx.app`. The course is the source of truth for the site at `site/` and the CLI at `cli/`.
 
 ## Behavior rules
 
@@ -38,7 +40,7 @@ When you change course content:
 
 ## Do not
 
-- Don't introduce new design language (color palettes, fonts) — this is course content, not branded marketing.
+- Don't introduce new design language inside `course/` markdown. The product brand (HackerX colors, type, lockup) lives in `site/` and stays out of the lesson source.
 - Don't bloat with hypothetical examples. Every example should be one a real builder would use.
 - Don't write generic "what is React" intros. Assume the reader has shipped before; they're here for the language of UI.
 - Don't add a "Conclusion" section at the end of every lesson. The lesson ends when the lesson ends.

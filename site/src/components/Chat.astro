@@ -266,6 +266,45 @@
     color: #ef4444;
     font-size: 0.8rem;
   }
+  .hx-chat-tools {
+    display: flex;
+    gap: 0.25rem;
+    margin-top: 0.4rem;
+    padding-top: 0.4rem;
+    border-top: 1px solid var(--sl-color-gray-5);
+  }
+  .hx-chat-speaker {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.2rem 0.45rem;
+    background: transparent;
+    color: var(--sl-color-gray-3);
+    border: 1px solid transparent;
+    border-radius: 0.25rem;
+    font: inherit;
+    font-size: 0.7rem;
+    cursor: pointer;
+    transition: color 120ms ease, border-color 120ms ease;
+  }
+  .hx-chat-speaker:hover {
+    color: var(--sl-color-text-accent);
+    border-color: var(--sl-color-gray-5);
+  }
+  .hx-chat-speaker[data-state='loading'] svg {
+    animation: hx-spin 1s linear infinite;
+  }
+  .hx-chat-speaker[data-state='playing'] {
+    color: var(--sl-color-text-accent);
+    border-color: var(--sl-color-text-accent);
+  }
+  .hx-chat-speaker[data-disabled] {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+  @keyframes hx-spin {
+    to { transform: rotate(360deg); }
+  }
 
   .hx-chat-cursor {
     display: inline-block;
@@ -443,6 +482,20 @@
       return working;
     }
 
+    function speakerButtonHTML(): string {
+      return `<div class="hx-chat-tools"><button type="button" class="hx-chat-speaker" data-speaker aria-label="Read aloud" data-state="idle"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg><span>Listen</span></button></div>`;
+    }
+
+    function appendSpeakerTools(messageEl: HTMLElement, text: string) {
+      const wrap = document.createElement('div');
+      wrap.innerHTML = speakerButtonHTML();
+      const tools = wrap.firstElementChild as HTMLElement | null;
+      if (!tools) return;
+      const button = tools.querySelector<HTMLButtonElement>('[data-speaker]');
+      if (button) button.dataset.text = text;
+      messageEl.appendChild(tools);
+    }
+
     function rerender() {
       log.innerHTML = '';
       if (history.length === 0) {
@@ -463,10 +516,104 @@
         const el = document.createElement('div');
         el.className = `hx-chat-msg ${m.role}`;
         el.innerHTML = m.role === 'assistant' ? renderMarkdown(m.content) : escapeHtml(m.content);
+        if (m.role === 'assistant') appendSpeakerTools(el, m.content);
         log.appendChild(el);
       }
       log.scrollTop = log.scrollHeight;
     }
+
+    let activeAudio: HTMLAudioElement | null = null;
+    let activeButton: HTMLButtonElement | null = null;
+
+    function resetButton(btn: HTMLButtonElement) {
+      btn.dataset.state = 'idle';
+      delete btn.dataset.disabled;
+      const label = btn.querySelector('span');
+      if (label) label.textContent = 'Listen';
+    }
+
+    function stopActive() {
+      if (activeAudio) {
+        try {
+          activeAudio.pause();
+          activeAudio.src = '';
+        } catch {}
+        activeAudio = null;
+      }
+      if (activeButton) {
+        resetButton(activeButton);
+        activeButton = null;
+      }
+    }
+
+    async function speak(button: HTMLButtonElement) {
+      const text = button.dataset.text;
+      if (!text) return;
+      if (button === activeButton) {
+        stopActive();
+        return;
+      }
+      stopActive();
+
+      button.dataset.state = 'loading';
+      button.dataset.disabled = '';
+      const label = button.querySelector('span');
+      if (label) label.textContent = 'Loading';
+
+      try {
+        const res = await fetch('/api/tts', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text }),
+        });
+        if (res.status === 503) {
+          button.dataset.state = 'idle';
+          delete button.dataset.disabled;
+          if (label) label.textContent = 'TTS off';
+          setTimeout(() => resetButton(button), 1800);
+          return;
+        }
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        const audio = new Audio(url);
+        activeAudio = audio;
+        activeButton = button;
+        button.dataset.state = 'playing';
+        delete button.dataset.disabled;
+        if (label) label.textContent = 'Stop';
+        audio.addEventListener('ended', () => {
+          URL.revokeObjectURL(url);
+          if (activeButton === button) {
+            resetButton(button);
+            activeAudio = null;
+            activeButton = null;
+          }
+        });
+        audio.addEventListener('error', () => {
+          URL.revokeObjectURL(url);
+          if (activeButton === button) {
+            resetButton(button);
+            activeAudio = null;
+            activeButton = null;
+          }
+        });
+        await audio.play();
+      } catch (err) {
+        console.error('tts', err);
+        button.dataset.state = 'idle';
+        delete button.dataset.disabled;
+        if (label) label.textContent = 'Failed';
+        setTimeout(() => resetButton(button), 1800);
+      }
+    }
+
+    log.addEventListener('click', (e) => {
+      const t = e.target;
+      if (!(t instanceof HTMLElement)) return;
+      const btn = t.closest('[data-speaker]') as HTMLButtonElement | null;
+      if (btn) speak(btn);
+    });
 
     function open() {
       panel.hidden = false;
@@ -489,6 +636,7 @@
     });
     clearBtn.addEventListener('click', () => {
       if (inFlight) inFlight.abort();
+      stopActive();
       history = [];
       saveHistory();
       rerender();
@@ -599,6 +747,7 @@
           }
         }
         assistantEl.innerHTML = renderMarkdown(assistantText);
+        if (assistantText) appendSpeakerTools(assistantEl, assistantText);
       } catch (err) {
         if ((err as Error).name === 'AbortError') {
           assistantEl.innerHTML = renderMarkdown(assistantText) || '<em>cancelled</em>';

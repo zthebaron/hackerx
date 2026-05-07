@@ -3,7 +3,6 @@
   "framework": "astro",
   "buildCommand": "pnpm build",
   "installCommand": "pnpm install --frozen-lockfile",
-  "outputDirectory": "dist",
   "headers": [
     {
       "source": "/(.*)",

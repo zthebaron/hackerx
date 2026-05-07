@@ -13,8 +13,10 @@
 import { readFileSync, writeFileSync, mkdirSync, readdirSync, statSync, rmSync, existsSync } from 'node:fs';
 import { join, relative, dirname, basename, extname } from 'node:path';
 
-const ROOT = decodeURIComponent(new URL('../..', import.meta.url).pathname);
 const SITE = decodeURIComponent(new URL('..', import.meta.url).pathname);
+// Course content lives at site/course/ (committed) so the Vercel build can see it.
+// Local dev edits the canonical copy at the repo root; `pnpm course:sync` keeps site/course in sync.
+const ROOT = `${SITE}course/`;
 const SOURCE_MODULES = [
   '00-start-here',
   '01-foundations',

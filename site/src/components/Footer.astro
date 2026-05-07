@@ -1,5 +1,6 @@
 ---
 import Default from '@astrojs/starlight/components/Footer.astro';
+import Chat from './Chat.astro';
 ---
 
 <Default><slot /></Default>
@@ -13,6 +14,8 @@ import Default from '@astrojs/starlight/components/Footer.astro';
   </p>
   <p class="hx-footer-tag">Stop saying "make it better." Pick a pattern.</p>
 </div>
+
+<Chat />
 
 <style>
   .hx-footer {

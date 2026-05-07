@@ -20,6 +20,7 @@
     "test:lighthouse": "lhci autorun --config=lighthouserc.json"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.95.1",
     "@astrojs/check": "^0.9.9",
     "@astrojs/starlight": "^0.39.0",
     "@astrojs/starlight-tailwind": "^5.0.0",

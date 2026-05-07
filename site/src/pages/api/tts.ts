@@ -28,9 +28,18 @@ interface ElevenVoice {
   category?: string;
 }
 
+// Fallback voice IDs from ElevenLabs' standard library, used if neither the user's
+// personal voices nor the shared library returns a hit. Update if ElevenLabs renames.
+const KNOWN_VOICES: Record<string, string> = {
+  emily: 'LcfcDJNUP1GQjkzn1xUU',
+  rachel: '21m00Tcm4TlvDq8ikWAM',
+  bella: 'EXAVITQu4vr4xnSDxMaL',
+  antoni: 'ErXwobaYiN019PkySvjV',
+  elli: 'MF3mGyEYCl7XYWbV9V6O',
+};
+
 async function resolveVoiceId(apiKey: string, requested?: string): Promise<string | null> {
   if (requested && /^[A-Za-z0-9]{12,}$/.test(requested)) {
-    // Caller passed something that looks like a raw voice ID; trust it.
     return requested;
   }
 
@@ -44,23 +53,59 @@ async function resolveVoiceId(apiKey: string, requested?: string): Promise<strin
     return cachedVoiceId;
   }
 
+  // Try the user's personal voice library first.
   try {
     const res = await fetch('https://api.elevenlabs.io/v1/voices', {
       headers: { 'xi-api-key': apiKey, Accept: 'application/json' },
     });
-    if (!res.ok) return null;
-    const data = (await res.json()) as { voices?: ElevenVoice[] };
-    const match = (data.voices ?? []).find((v) => v.name.toLowerCase() === targetName);
-    if (match) {
-      if (targetName === DEFAULT_VOICE_NAME.toLowerCase()) {
-        cachedVoiceId = match.voice_id;
-        cachedVoiceLookupAt = Date.now();
+    if (res.ok) {
+      const data = (await res.json()) as { voices?: ElevenVoice[] };
+      const match = (data.voices ?? []).find((v) => v.name.toLowerCase() === targetName);
+      if (match) {
+        if (targetName === DEFAULT_VOICE_NAME.toLowerCase()) {
+          cachedVoiceId = match.voice_id;
+          cachedVoiceLookupAt = Date.now();
+        }
+        return match.voice_id;
       }
-      return match.voice_id;
     }
   } catch (err) {
-    console.error('voices lookup failed', err);
+    console.error('personal voices lookup failed', err);
   }
+
+  // Try the shared (public) voice library — voices here can be used without explicit add for most accounts.
+  try {
+    const url = new URL('https://api.elevenlabs.io/v1/shared-voices');
+    url.searchParams.set('search', targetName);
+    url.searchParams.set('page_size', '20');
+    const res = await fetch(url.toString(), {
+      headers: { 'xi-api-key': apiKey, Accept: 'application/json' },
+    });
+    if (res.ok) {
+      const data = (await res.json()) as { voices?: ElevenVoice[] };
+      const match = (data.voices ?? []).find((v) => v.name.toLowerCase() === targetName);
+      if (match) {
+        if (targetName === DEFAULT_VOICE_NAME.toLowerCase()) {
+          cachedVoiceId = match.voice_id;
+          cachedVoiceLookupAt = Date.now();
+        }
+        return match.voice_id;
+      }
+    }
+  } catch (err) {
+    console.error('shared voices lookup failed', err);
+  }
+
+  // Final fallback: known voice IDs from the ElevenLabs preset library.
+  const known = KNOWN_VOICES[targetName];
+  if (known) {
+    if (targetName === DEFAULT_VOICE_NAME.toLowerCase()) {
+      cachedVoiceId = known;
+      cachedVoiceLookupAt = Date.now();
+    }
+    return known;
+  }
+
   return null;
 }
 

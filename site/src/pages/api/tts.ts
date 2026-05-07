@@ -36,6 +36,11 @@ const KNOWN_VOICES: Record<string, string> = {
   bella: 'EXAVITQu4vr4xnSDxMaL',
   antoni: 'ErXwobaYiN019PkySvjV',
   elli: 'MF3mGyEYCl7XYWbV9V6O',
+  adam: 'pNInz6obpgDQGcFmaJgB',
+  arnold: 'VR6AewLTigWG4xSOukaG',
+  domi: 'AZnzlk1XvdvUeBnXmlld',
+  josh: 'TxGEqnHWrfWFTfGW9XjX',
+  sam: 'yoZ06aMxZJJ28mfd3POQ',
 };
 
 async function resolveVoiceId(apiKey: string, requested?: string): Promise<string | null> {

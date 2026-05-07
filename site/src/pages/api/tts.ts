@@ -15,7 +15,7 @@ import type { APIRoute } from 'astro';
 export const prerender = false;
 
 const MAX_TEXT_LEN = 1500;
-const DEFAULT_VOICE_NAME = 'Emily';
+const DEFAULT_VOICE_NAME = 'Lucy';
 const DEFAULT_MODEL = 'eleven_turbo_v2_5';
 
 let cachedVoiceId: string | null = null;
@@ -31,6 +31,7 @@ interface ElevenVoice {
 // Fallback voice IDs from ElevenLabs' standard library, used if neither the user's
 // personal voices nor the shared library returns a hit. Update if ElevenLabs renames.
 const KNOWN_VOICES: Record<string, string> = {
+  lucy: 'lcMyyd2HUfFzxdCaC4Ta',
   emily: 'LcfcDJNUP1GQjkzn1xUU',
   rachel: '21m00Tcm4TlvDq8ikWAM',
   bella: 'EXAVITQu4vr4xnSDxMaL',

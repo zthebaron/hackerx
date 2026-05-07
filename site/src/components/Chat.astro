@@ -48,7 +48,7 @@
       </div>
 
       <div class="hx-voice-row" role="radiogroup" aria-label="Voice for spoken replies">
-        <button type="button" class="hx-voice" data-voice="Emily" role="radio" aria-checked="true" title="Emily — warm narrator">E</button>
+        <button type="button" class="hx-voice" data-voice="Lucy" role="radio" aria-checked="true" title="Lucy — default voice">L</button>
         <button type="button" class="hx-voice" data-voice="Adam" role="radio" aria-checked="false" title="Adam — deep narrator">A</button>
         <button type="button" class="hx-voice" data-voice="Rachel" role="radio" aria-checked="false" title="Rachel — calm">R</button>
       </div>
@@ -64,6 +64,28 @@
     <div class="hx-log" id="hx-chat-log" role="log" aria-live="polite" aria-label="Chat messages"></div>
 
     <form class="hx-form" id="hx-chat-form">
+      <button
+        type="button"
+        id="hx-mic"
+        class="hx-mic"
+        data-state="idle"
+        aria-label="Record a voice message"
+        title="Record a voice message"
+      >
+        <svg class="hx-mic-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="9" y="2" width="6" height="12" rx="3"/>
+          <path d="M5 10v2a7 7 0 0 0 14 0v-2"/>
+          <line x1="12" y1="19" x2="12" y2="22"/>
+          <line x1="8" y1="22" x2="16" y2="22"/>
+        </svg>
+        <svg class="hx-mic-spin" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 12a9 9 0 1 1-6.22-8.56"/>
+        </svg>
+        <svg class="hx-mic-stop" width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <rect x="4" y="4" width="16" height="16" rx="2"/>
+        </svg>
+        <span class="hx-mic-time" id="hx-mic-time" hidden>0:00</span>
+      </button>
       <label class="hx-input-wrap">
         <span class="sr-only">Your question</span>
         <textarea
@@ -469,6 +491,76 @@
   .hx-send:hover { transform: scale(1.04); }
   .hx-send:disabled { opacity: 0.5; cursor: not-allowed; }
 
+  /* Microphone (voice-in) ───────────────────────────────────── */
+  .hx-mic {
+    align-self: stretch;
+    min-width: 38px;
+    padding: 0 0.5rem;
+    background: var(--sl-color-bg-sidebar);
+    color: var(--sl-color-gray-3);
+    border: 1px solid var(--sl-color-gray-5);
+    border-radius: 0.5rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    transition: all 120ms ease;
+    position: relative;
+  }
+  .hx-mic:hover {
+    color: var(--sl-color-text);
+    border-color: var(--sl-color-text-accent);
+  }
+  .hx-mic:focus-visible {
+    outline: 2px solid var(--sl-color-text-accent);
+    outline-offset: 2px;
+  }
+  .hx-mic-icon { display: inline; }
+  .hx-mic-spin, .hx-mic-stop { display: none; }
+  .hx-mic-time {
+    font-family: var(--__sl-font-mono);
+    font-size: 0.72rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .hx-mic[data-state='recording'] {
+    background: #b91c1c;
+    color: #ffffff;
+    border-color: #ef4444;
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+    animation: hx-mic-pulse 1.6s ease-out infinite;
+  }
+  .hx-mic[data-state='recording'] .hx-mic-icon { display: none; }
+  .hx-mic[data-state='recording'] .hx-mic-stop { display: inline; }
+  .hx-mic[data-state='recording'] .hx-mic-time {
+    display: inline;
+    color: #ffffff;
+  }
+  @keyframes hx-mic-pulse {
+    0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.55); }
+    70% { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+  }
+
+  .hx-mic[data-state='transcribing'] {
+    color: var(--sl-color-text-accent);
+    border-color: var(--sl-color-text-accent);
+  }
+  .hx-mic[data-state='transcribing'] .hx-mic-icon { display: none; }
+  .hx-mic[data-state='transcribing'] .hx-mic-spin {
+    display: inline;
+    animation: hx-spin 1s linear infinite;
+  }
+
+  .hx-mic[data-state='denied'] {
+    color: #dc2626;
+    border-color: #dc2626;
+    cursor: not-allowed;
+  }
+  .hx-mic[data-disabled] { cursor: not-allowed; opacity: 0.6; }
+
   .hx-foot {
     display: flex;
     justify-content: space-between;
@@ -521,15 +613,18 @@
     const formEl = document.getElementById('hx-chat-form') as HTMLFormElement | null;
     const inputEl = document.getElementById('hx-chat-input') as HTMLTextAreaElement | null;
     const clearEl = document.getElementById('hx-chat-clear') as HTMLButtonElement | null;
+    const micEl = document.getElementById('hx-mic') as HTMLButtonElement | null;
+    const micTimeEl = document.getElementById('hx-mic-time') as HTMLElement | null;
 
-    if (!rootEl || !launcherEl || !autospeakEl || !panelEl || !closeEl || !logEl || !formEl || !inputEl || !clearEl) return;
+    if (!rootEl || !launcherEl || !autospeakEl || !panelEl || !closeEl || !logEl || !formEl || !inputEl || !clearEl || !micEl || !micTimeEl) return;
     const root = rootEl, launcher = launcherEl, autospeak = autospeakEl, panel = panelEl;
     const closeBtn = closeEl, log = logEl, form = formEl, input = inputEl, clearBtn = clearEl;
+    const mic = micEl, micTime = micTimeEl;
 
     const HISTORY_KEY = 'hx_chat_history_v1';
     const VOICE_KEY = 'hx_voice';
     const AUTOSPEAK_KEY = 'hx_autospeak';
-    const VOICES = ['Emily', 'Adam', 'Rachel'] as const;
+    const VOICES = ['Lucy', 'Adam', 'Rachel'] as const;
 
     type Msg = { role: 'user' | 'assistant'; content: string };
     let history: Msg[] = [];
@@ -538,8 +633,8 @@
     let voice: string = (() => {
       try {
         const v = localStorage.getItem(VOICE_KEY);
-        return VOICES.includes(v as typeof VOICES[number]) ? v! : 'Emily';
-      } catch { return 'Emily'; }
+        return VOICES.includes(v as typeof VOICES[number]) ? v! : 'Lucy';
+      } catch { return 'Lucy'; }
     })();
 
     let autospeakOn: boolean = (() => {
@@ -882,6 +977,126 @@
       } finally {
         inFlight = null;
       }
+    });
+
+    /* ── Voice-in (MediaRecorder → /api/transcribe → textarea) ── */
+    const MAX_REC_SECS = 60;
+    let recorder: MediaRecorder | null = null;
+    let recChunks: Blob[] = [];
+    let recStream: MediaStream | null = null;
+    let recStartedAt = 0;
+    let recTimerId: number | null = null;
+
+    function setMicState(state: 'idle' | 'recording' | 'transcribing' | 'denied') {
+      mic.dataset.state = state;
+      if (state === 'recording' || state === 'transcribing') mic.dataset.disabled = '';
+      else delete mic.dataset.disabled;
+      micTime.hidden = state !== 'recording';
+    }
+
+    function fmtClock(s: number): string {
+      const m = Math.floor(s / 60);
+      const r = s % 60;
+      return `${m}:${String(r).padStart(2, '0')}`;
+    }
+
+    function updateRecTimer() {
+      const elapsed = Math.floor((Date.now() - recStartedAt) / 1000);
+      micTime.textContent = fmtClock(elapsed);
+      if (elapsed >= MAX_REC_SECS) stopRec();
+    }
+
+    async function startRec() {
+      if (recorder) return;
+      if (!navigator.mediaDevices?.getUserMedia || typeof MediaRecorder === 'undefined') {
+        setMicState('denied');
+        mic.title = 'Voice input not supported in this browser';
+        return;
+      }
+      try {
+        recStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      } catch (err) {
+        console.warn('mic permission denied', err);
+        setMicState('denied');
+        mic.title = 'Microphone permission denied. Allow access in your browser settings.';
+        setTimeout(() => { setMicState('idle'); mic.title = 'Record a voice message'; }, 2200);
+        return;
+      }
+
+      recChunks = [];
+      const mime = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
+        ? 'audio/webm;codecs=opus'
+        : MediaRecorder.isTypeSupported('audio/webm')
+        ? 'audio/webm'
+        : '';
+      recorder = mime ? new MediaRecorder(recStream, { mimeType: mime }) : new MediaRecorder(recStream);
+      recorder.addEventListener('dataavailable', (e) => {
+        if (e.data && e.data.size > 0) recChunks.push(e.data);
+      });
+      recorder.addEventListener('stop', async () => {
+        const tracks = recStream?.getTracks() ?? [];
+        for (const t of tracks) t.stop();
+        recStream = null;
+        if (recTimerId !== null) {
+          clearInterval(recTimerId);
+          recTimerId = null;
+        }
+        const blob = new Blob(recChunks, { type: recorder?.mimeType || 'audio/webm' });
+        recorder = null;
+        recChunks = [];
+        if (blob.size < 800) {
+          setMicState('idle');
+          return;
+        }
+        await transcribe(blob);
+      });
+      recorder.start(250);
+      recStartedAt = Date.now();
+      micTime.textContent = '0:00';
+      setMicState('recording');
+      recTimerId = window.setInterval(updateRecTimer, 250);
+    }
+
+    function stopRec() {
+      if (!recorder) return;
+      try { recorder.stop(); } catch {}
+    }
+
+    async function transcribe(blob: Blob) {
+      setMicState('transcribing');
+      const fd = new FormData();
+      fd.set('audio', blob, 'voice.webm');
+      try {
+        const res = await fetch('/api/transcribe', { method: 'POST', body: fd });
+        if (res.status === 503) {
+          setMicState('idle');
+          input.value = (input.value + ' ').trim();
+          input.placeholder = 'Voice-in is not configured (set API_ELEVENLABS).';
+          setTimeout(() => { input.placeholder = 'Ask the HackerX assistant…'; }, 3500);
+          return;
+        }
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = (await res.json()) as { text?: string };
+        const text = (data.text ?? '').trim();
+        if (text) {
+          const before = input.value.trim();
+          input.value = before ? `${before} ${text}` : text;
+          input.dispatchEvent(new Event('input', { bubbles: true }));
+          input.focus();
+          input.setSelectionRange(input.value.length, input.value.length);
+        }
+        setMicState('idle');
+      } catch (err) {
+        console.error('transcribe', err);
+        setMicState('idle');
+        input.placeholder = 'Couldn\'t transcribe — try again.';
+        setTimeout(() => { input.placeholder = 'Ask the HackerX assistant…'; }, 2400);
+      }
+    }
+
+    mic.addEventListener('click', () => {
+      if (mic.dataset.state === 'recording') stopRec();
+      else if (mic.dataset.state !== 'transcribing') startRec();
     });
 
     loadHistory();

@@ -1,0 +1,174 @@
+---
+title: "The Eight-Step Operating System"
+description: "The whole HackerX course in eight steps. Drop it into CLAUDE.md and every UI session changes shape."
+pubDate: 2026-04-19
+tags: ["claude-code", "operating-system", "ui-ux", "claude-md"]
+author: "Tim De Vallee"
+draft: false
+---
+
+You can read every article in the HackerX library, internalize the [42-pattern cheat sheet](/03-ui-ux-vocabulary/full-cheat-sheet/), memorize the [master prompt](/02-master-prompts/master-prompt/), and still ship mediocre UI if Claude Code does not follow the steps in the right order on every session.
+
+The eight-step operating system is the order. It is the whole course compressed into a block you paste into CLAUDE.md once and forget.
+
+## The OS
+
+Drop this into the top of your CLAUDE.md.
+
+```
+For every UI change, follow this 8-step OS:
+
+1. Name the UI/UX pattern options.
+2. Explain the tradeoffs.
+3. Recommend the best pattern.
+4. Show where it belongs in the app.
+5. Reuse existing components.
+6. Implement the smallest useful version.
+7. Verify the result.
+8. Teach the vocabulary as you go.
+
+Do not skip steps. The order matters.
+```
+
+That is it. Eight lines. One paste. From this moment on, every Claude Code session in the repo follows the OS by default.
+
+## Why each step is non-negotiable
+
+The OS is engineered. Every step contributes a property the others cannot. Skip one and you lose the property.
+
+### 1. Name the UI/UX pattern options
+
+Without rivals, there is no real choice. Without choice, you ship the first thing.
+
+Claude needs to enumerate the candidates by their actual names — sidebar versus drawer, accordion versus tabs, master-detail versus split-pane. The names carry contracts. Skipping this step means picking a vibe instead of a pattern.
+
+This is the step covered by [The Three Options Rule](/blog/the-three-options-rule/) and the entire [vocabulary cheat sheet](/03-ui-ux-vocabulary/full-cheat-sheet/).
+
+### 2. Explain the tradeoffs
+
+Without tradeoffs, the recommendation is just opinion. Tradeoffs make it defensible.
+
+Each option needs four things attached: what changes, why it helps, components used, difficulty, risks. Now the recommendation is not "I think option 2 is good." It is "option 2 is the right pick *because* the team is small, the kanban in option 3 is overkill, and option 1 plateaus in a quarter."
+
+That second statement is something you can defend to a teammate, a designer, or your future self.
+
+### 3. Recommend the best pattern
+
+Without a recommendation, the user has to do the picking. Picking is exactly what Claude Code is supposed to take off your plate.
+
+The recommendation is the value-add. It says: "given your product type, your audience, your team size, and your stack, this is the option I would ship." That sentence is what turns Claude from autocomplete into a design partner.
+
+### 4. Show where it belongs in the app
+
+Without placement, the pattern is abstract. Placement makes it real.
+
+"Add a faceted filter" is a pattern. "Add a faceted filter above the deals table at `/deals`, in the toolbar slot to the left of the search input" is a placement. The second one Claude can build today.
+
+This step also catches collisions. If the proposed placement clashes with an existing component, the OS surfaces it now instead of in commit 4.
+
+### 5. Reuse existing components
+
+Without reuse, every feature creates parallel components. Three sessions in a row of "make a metric card" gives you `Card`, `MetricCard`, and `KpiCard` — all doing the same job, none agreeing on shape, none consistent in spacing.
+
+Reuse is what keeps a codebase coherent over time. It is the antidote to AI drift. See [Reuse Before Invent](/blog/reuse-before-invent/) for the full treatment.
+
+### 6. Implement the smallest useful version
+
+Without smallness, you cannot ship today. Smallness is what creates the verification loop.
+
+If Claude builds a 600-line PR, you cannot verify it in one pass. You skim. You miss things. Bugs land. If Claude builds five 60-line commits, each commit gets verified. The verification loop runs five times. The bugs do not land.
+
+This step is also the antidote to scope creep. The smallest useful version of "add a dashboard" is "add the route, the shell, and one KPI card wired to real data." Everything else comes in subsequent commits — each one independently verified.
+
+### 7. Verify the result
+
+Without verification, "done" means "compiled." Verification means "shipped."
+
+Compiled is the floor, not the ceiling. Shipped means typecheck plus lint plus responsive at three breakpoints plus keyboard navigation plus visible focus plus color contrast plus loading, empty, and error states. See [Verification Is Not Typecheck](/blog/verification-is-not-typecheck/) for the full checklist.
+
+The verification step is the gate that prevents prototypes from masquerading as production work.
+
+### 8. Teach the vocabulary as you go
+
+Without teaching, you do not get the compound effect. Vocabulary is what makes the next session faster.
+
+Every session teaches you 2-3 new pattern names. After 20 sessions you are speaking the language. After 50, you are designing in your head before you prompt. After 200, the session is a 5-minute confirmation pass instead of a 90-minute redesign.
+
+That compounding curve only happens if Claude Code teaches you the words while it works. That is what step 8 enforces.
+
+## The order is the OS
+
+You cannot rearrange these steps. The order is what makes them work.
+
+Step 1 (name options) has to come before step 2 (explain tradeoffs) because tradeoffs are *between* options. You cannot have one without the other.
+
+Step 2 (tradeoffs) has to come before step 3 (recommend) because the recommendation is grounded in tradeoffs. Without tradeoffs first, the recommendation is opinion.
+
+Step 4 (placement) has to come before step 5 (reuse) because placement reveals which existing components are nearby. Reuse is downstream of placement.
+
+Step 5 (reuse) has to come before step 6 (implement) because the implementation should be a diff against existing components, not a parallel system.
+
+Step 6 (implement small) has to come before step 7 (verify) because verification operates on small surface area. A giant PR cannot be verified.
+
+Step 7 (verify) has to come before step 8 (teach) because the teaching includes the verification — you learn the vocabulary by reading the verified output.
+
+Skip a step, lose a property. Reorder a step, break a downstream property. The OS is a system, not a checklist.
+
+## How to install it in your team
+
+### In your repo
+
+Add the OS as a block at the top of CLAUDE.md.
+
+```
+# Project workflow rules
+
+For every UI change, follow this 8-step OS:
+
+1. Name the UI/UX pattern options.
+2. Explain the tradeoffs.
+3. Recommend the best pattern.
+4. Show where it belongs in the app.
+5. Reuse existing components.
+6. Implement the smallest useful version.
+7. Verify the result.
+8. Teach the vocabulary as you go.
+
+Do not skip steps. The order matters.
+```
+
+That single block is the entire course in your repo. From the next session forward, every Claude Code interaction in this codebase follows the OS by default. No re-pasting. No re-prompting. No drift.
+
+### In your prompt library
+
+For one-off prompts that do not have a CLAUDE.md to read, paste the OS as the prefix.
+
+```
+[8-step OS quoted here]
+
+Now: <your specific request>
+```
+
+### In your team's onboarding
+
+Make the OS the first thing every new engineer reads about working with Claude Code in your stack. It is shorter than your README. It does more.
+
+## The single-sentence version
+
+If you have to compress the OS to one sentence for a busy teammate, this is it:
+
+> Don't just code my request. Diagnose, propose options, recommend, place, reuse, build small, verify, teach.
+
+Memorize that sentence. It is the [whole course](/) in 18 words.
+
+## What changes when you install the OS
+
+The first session after installation feels different. Claude Code starts every UI request with options, not code. You read three options instead of skimming a 400-line diff. You pick. Claude builds in small commits. Each commit is verified before the next one starts. The session ends with a list of vocabulary you just learned.
+
+The tenth session feels normal. The OS is the floor, not the exception. You have stopped writing prompts that say "make this better" because the OS catches them and translates them automatically.
+
+The fiftieth session feels fast. You walk in already knowing which two patterns are competing. You skim option 3 because you already knew it would be overkill. You ship in 30 minutes.
+
+That is the compounding curve. The OS is the engine. Vocabulary is the fuel.
+
+If you want to see the OS run live, read the [demo walkthrough](/08-demonstrations/). If you want the deeper rationale on why each step is engineered the way it is, the master prompt has the [full anatomy](/blog/the-master-prompt-anatomy/). And if you want the moment when this practice produces product-quality work, see [From Vibe Coding to Product Quality](/blog/from-vibe-coding-to-product-quality/).

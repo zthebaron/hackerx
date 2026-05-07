@@ -1,0 +1,86 @@
+---
+interface Props {
+  skill?: string;
+  scope?: 'project' | 'user';
+}
+
+const { skill = 'ui-pattern-picker', scope = 'project' } = Astro.props;
+const cliCmd = scope === 'user' ? `npx hackerx init --skill ${skill} --scope user` : `npx hackerx init --skill ${skill}`;
+const targetPath = scope === 'user' ? '~/.claude/skills/' + skill : '.claude/skills/' + skill;
+---
+
+<div class="hx-skill-installer">
+  <div class="hx-skill-cmd">
+    <code>{cliCmd}</code>
+    <button type="button" class="hx-skill-copy" data-clipboard={cliCmd} aria-label="Copy install command">Copy</button>
+  </div>
+  <p class="hx-skill-target">
+    Drops <code>{targetPath}/SKILL.md</code> into your repo. Open Claude Code; the next vague UI request gets three options.
+  </p>
+</div>
+
+<style>
+  .hx-skill-installer {
+    margin-block: 1.5rem;
+    padding: 1rem 1.25rem;
+    background: var(--sl-color-bg-sidebar);
+    border: 1px solid var(--sl-color-text-accent);
+    border-radius: 0.5rem;
+  }
+  .hx-skill-cmd {
+    display: flex;
+    gap: 0.5rem;
+    align-items: stretch;
+  }
+  .hx-skill-cmd code {
+    flex: 1;
+    padding: 0.5rem 0.75rem;
+    font-family: var(--__sl-font-mono);
+    font-size: 0.95rem;
+    background: var(--sl-color-bg);
+    color: var(--sl-color-text-accent);
+    border-radius: 0.25rem;
+    overflow-x: auto;
+  }
+  .hx-skill-copy {
+    padding: 0.5rem 0.875rem;
+    background: var(--sl-color-text-accent);
+    color: var(--sl-color-text-invert);
+    border: 0;
+    border-radius: 0.25rem;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .hx-skill-copy[data-copied] {
+    opacity: 0.7;
+  }
+  .hx-skill-target {
+    margin: 0.75rem 0 0;
+    font-size: 0.875rem;
+    color: var(--sl-color-gray-2);
+  }
+  .hx-skill-target code {
+    font-size: 0.8rem;
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>('.hx-skill-copy').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const text = btn.dataset.clipboard ?? '';
+      try {
+        await navigator.clipboard.writeText(text);
+        btn.dataset.copied = 'true';
+        const orig = btn.textContent;
+        btn.textContent = 'Copied';
+        setTimeout(() => {
+          delete btn.dataset.copied;
+          btn.textContent = orig;
+        }, 1500);
+      } catch (err) {
+        console.error(err);
+      }
+    });
+  });
+</script>

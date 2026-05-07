@@ -1,0 +1,183 @@
+---
+title: "Stop Saying Make It Better"
+description: "Vague requests produce vague UI. Swap make it better for a named pattern and watch Claude Code stop guessing."
+pubDate: 2026-04-01
+tags: ["claude-code", "ui-ux", "prompts", "vocabulary"]
+author: "Tim De Vallee"
+draft: false
+---
+
+You stare at a dashboard. It feels off. You type the prompt every founder, engineer, and PM has typed at least once.
+
+```
+make this dashboard better
+```
+
+Claude Code thinks for a moment. Then it scaffolds a kanban board over your sales pipeline, reorders your sidebar, and renames three components you never asked it to touch. You revert. You sigh. You blame the model.
+
+The model is not the problem. The prompt is the problem.
+
+## What "make it better" actually says
+
+When you say "make it better," you are handing Claude Code three jobs at once: diagnose what is wrong, decide what better means, and ship something. Without context, the model picks the most generic upgrade it has seen across a million repos. That upgrade is almost never the one your product needs.
+
+Worse, "better" has no falsifiable result. There is no test for "better." So Claude shows you something visually different, you cannot tell if it is correct, and the next round of prompts gets even vaguer.
+
+## Two prompts, same screen
+
+Imagine your sales dashboard. Four numbers at the top. A long table below.
+
+Watch what happens when the prompt changes.
+
+**Weak prompt:**
+
+```
+Make this dashboard better. It feels weak.
+```
+
+What you get: Claude renames `Dashboard.tsx` to `DashboardV2.tsx`, swaps your table for a kanban board, and adds a chart you never asked for. None of it reuses your existing components. Half the work has to be reverted.
+
+**Better prompt:**
+
+```
+On /dashboard, replace the four raw numbers at the top with KPI cards
+that show the value, the label, and a trend delta vs the previous
+period. Add a faceted filter for rep above the deals table. Keep all
+existing components. Use shadcn Card and Badge — do not add libraries.
+Show me three layout options before coding.
+```
+
+What you get: a diagnosis, three real options (compact KPIs / chart-card hybrid / drill-down panel), a recommendation, and an implementation plan that touches three files. You pick. Claude builds. You ship.
+
+The second prompt is not longer because it is fancier. It is longer because it names patterns. KPI card. Trend delta. Faceted filter. Each name carries a contract — what the component does, what it looks like, how users interact with it. Claude knows that contract. You do not have to teach it.
+
+## The root cause: missing vocabulary
+
+Most people get stuck at the same place. You can feel the screen is cluttered. You know users need "some kind of menu thing." You cannot decide between a sidebar, a command palette, an accordion, a drawer, tabs, a popover, or a split-pane layout.
+
+Without a name, you cannot prompt. Without a prompt, you cannot ship.
+
+The fix is not to learn React harder. The fix is to learn the [42 patterns in the cheat sheet](/03-ui-ux-vocabulary/full-cheat-sheet/) and which one fits which problem. Once a request has a name, Claude Code stops guessing. It starts producing.
+
+## How to translate "make it better" in real time
+
+Before you hit enter on any vague prompt, run it through a quick filter.
+
+1. What is the user actually trying to do? Read this page faster, find a thing, edit a record, compare two records, get unstuck.
+2. Which category does that fall into? Navigation, disclosure, dashboard, productivity, layout, trust and feedback.
+3. Which pattern in that category fits? Sidebar, breadcrumbs, tabs, accordion, KPI cards, faceted filters, split-pane, master-detail.
+4. Which existing component already does most of it? `components/ui/card.tsx`, `components/ui/sheet.tsx`, your existing `DataTable`.
+
+If you cannot answer those four questions, you are not ready to prompt. You are ready to diagnose. That is what the [master prompt](/02-master-prompts/master-prompt/) is for — it forces Claude to do the diagnosis with you before writing a single line of code.
+
+## The make-it-better tax
+
+Every "make it better" prompt costs you in three ways.
+
+It costs implementation time. Claude builds the wrong thing, you revert, you re-prompt.
+
+It costs codebase coherence. Each vague prompt creates parallel components. Three "better" sessions in a row gives you `Card`, `CardV2`, `MetricCard`, and `KpiCard` — all doing the same job, none agreeing.
+
+It costs your own learning. Vague prompts teach you nothing. You walk away from the session no closer to knowing the right vocabulary for next time.
+
+Compare with a named-pattern prompt. The implementation lands the first time. The codebase keeps its single `KpiCard`. And you walk away knowing the words "trend delta" and "faceted filter" so the next prompt is even sharper.
+
+## A drop-in upgrade for your prompt library
+
+Here is the swap. Save it.
+
+```
+Old: "make this <thing> better"
+
+New: "On <route>, the user goal is <one sentence>.
+      Propose three pattern options (safe / modern / power-user).
+      For each: what changes, why it helps, components used,
+      difficulty, risks. Recommend one.
+      Reuse existing components. Do not code yet."
+```
+
+Drop that into [CLAUDE.md](/11-final-operating-system/) and Claude will do the translation for you on every vague request that follows.
+
+## When you genuinely don't know the pattern
+
+This is the case the [UI Pattern Picker skill](/07-skills/installing-skills/) was built for. Install it once and Claude turns "this feels cluttered" into three named options before you finish typing.
+
+Here is what the skill catches. Imagine you type:
+
+```
+the deals page feels weak
+```
+
+Without the skill, Claude either guesses or asks you a follow-up. With the skill, you get back:
+
+```
+Diagnosis: missing power-user features for data work.
+
+Option 1 — Lightweight upgrade (Safe)
+  Add column sort, simple text filter, row hover actions.
+  Components: existing DataTable, DropdownMenu.
+  Difficulty: low. Risks: plateaus quickly.
+
+Option 2 — Full data grid (Modern SaaS)
+  Faceted filters, saved views, column visibility, density,
+  bulk actions, row drawer for detail.
+  Components: existing DataTable + Sheet + Badge, plus a new
+  FacetedFilter and SavedViews.
+  Difficulty: medium. Risks: more surface to learn.
+
+Option 3 — Dual-mode table + kanban (Power-user)
+  Option 2 plus a view switcher between table and kanban
+  grouped by status.
+  Components: option 2 + a Kanban component + dnd-kit.
+  Difficulty: high. Risks: dnd-kit dependency.
+
+Recommendation: Option 2 for most teams.
+```
+
+You did not write a better prompt. You typed five words. The skill did the lift. Read [The UI Pattern Picker Skill](/blog/the-ui-pattern-picker-skill/) for the full breakdown.
+
+## The four-question filter, applied
+
+Until you install the skill, run vague prompts through this filter manually. It takes 30 seconds.
+
+```
+Question 1: What is the user actually trying to do?
+Question 2: Which category does that fall into?
+            (Navigation, Disclosure, Dashboard, Productivity,
+             Layout, Trust and Feedback)
+Question 3: Which pattern in that category fits?
+Question 4: Which existing component already does most of it?
+```
+
+Apply it to "make this dashboard better."
+
+```
+Q1: They want to see the top-line numbers fast and drill into them.
+Q2: Dashboard category.
+Q3: KPI cards with trend deltas + drill-down side panel.
+Q4: Existing Card and Sheet primitives.
+```
+
+Now your prompt writes itself:
+
+```
+On /dashboard, replace the four raw numbers with KPI cards
+that show value, label, and trend delta. Wire each KPI to
+open a drill-down side panel via the existing Sheet. Reuse
+Card, Sheet, Badge. Show me three layout options before
+coding.
+```
+
+Same screen. Same 30 seconds of thinking. Completely different output from Claude Code.
+
+## Why "make it better" feels productive when it isn't
+
+The reason this prompt is so common is that it feels efficient. Five words. Done. You hand off the thinking to Claude.
+
+But the thinking does not disappear — it just gets done badly. Claude has to invent a goal. Invent a diagnosis. Invent a pattern. Each invention has a 50/50 chance of matching what you actually wanted. Stack three inventions and the odds the output matches your intent are 12.5%.
+
+A 30-second filter pass before you prompt raises those odds to 95%. The 30 seconds is not extra work. It is the work you were going to do anyway, except now you are doing it before the wrong code lands instead of after.
+
+The 100x is not a faster keyboard. It is the moment you stop pointing vaguely at screens and start naming what you want. Once you have the words, Claude Code stops being autocomplete and starts being a design partner.
+
+Read [The Three Options Rule](/blog/the-three-options-rule/) next, or jump to [Vocabulary Is The 100x](/blog/vocabulary-is-the-100x/) if you want the full cheat sheet treatment. If you want to see this play out end-to-end, the [eight-step OS](/blog/the-eight-step-operating-system/) wraps every step into one block you can drop into any repo.

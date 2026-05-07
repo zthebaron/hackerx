@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630" role="img" aria-labelledby="ogTitle">
+  <title id="ogTitle">HackerX — Ship UI 100x faster with Claude Code</title>
+  <defs>
+    <pattern id="scanlines" width="4" height="4" patternUnits="userSpaceOnUse">
+      <rect width="4" height="4" fill="#0c0a09"/>
+      <line x1="0" y1="2" x2="4" y2="2" stroke="#10b981" stroke-width="1" stroke-opacity="0.02"/>
+    </pattern>
+    <linearGradient id="vignette" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0c0a09" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#0c0a09" stop-opacity="0.6"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="#0c0a09"/>
+  <rect width="1200" height="630" fill="url(#scanlines)"/>
+  <rect width="1200" height="630" fill="url(#vignette)"/>
+
+  <!-- Magenta corner mark (top-right) -->
+  <g stroke="#ec4899" stroke-width="3" fill="none">
+    <line x1="1140" y1="40" x2="1170" y2="40"/>
+    <line x1="1170" y1="40" x2="1170" y2="70"/>
+  </g>
+
+  <!-- Wordmark top-left -->
+  <g transform="translate(72 110)">
+    <text x="0" y="0" font-family="ui-monospace, 'SF Mono', monospace" font-size="96" font-weight="700" fill="#f5f5f4" letter-spacing="2">Hacker</text>
+    <g transform="translate(380 -76)" stroke="#10b981" stroke-width="10" stroke-linecap="square" fill="none">
+      <line x1="6" y1="14" x2="76" y2="84"/>
+      <line x1="76" y1="14" x2="6" y2="84"/>
+    </g>
+    <rect x="475" y="-66" width="10" height="76" fill="#10b981"/>
+  </g>
+
+  <!-- Tagline (center) -->
+  <g transform="translate(72 290)">
+    <text x="0" y="0" font-family="ui-monospace, 'SF Mono', monospace" font-size="48" font-weight="600" fill="#fafaf9">
+      <tspan x="0" dy="0">Ship UI </tspan><tspan fill="#10b981">100x</tspan><tspan> faster with</tspan>
+    </text>
+    <text x="0" y="64" font-family="ui-monospace, 'SF Mono', monospace" font-size="48" font-weight="600" fill="#fafaf9">Claude Code as your design partner.</text>
+    <!-- Magenta underline on 100x -->
+    <line x1="200" y1="14" x2="312" y2="14" stroke="#ec4899" stroke-width="3"/>
+  </g>
+
+  <!-- Terminal block (bottom-right) -->
+  <g transform="translate(640 420)">
+    <rect x="0" y="0" width="488" height="160" rx="8" fill="#0c0a09" stroke="#10b981" stroke-width="1.5" stroke-opacity="0.4"/>
+    <!-- Window dots -->
+    <circle cx="20" cy="20" r="5" fill="#57534e"/>
+    <circle cx="38" cy="20" r="5" fill="#57534e"/>
+    <circle cx="56" cy="20" r="5" fill="#57534e"/>
+    <line x1="0" y1="36" x2="488" y2="36" stroke="#10b981" stroke-width="1" stroke-opacity="0.2"/>
+    <g font-family="ui-monospace, 'SF Mono', monospace" font-size="20" fill="#34d399">
+      <text x="20" y="68"><tspan fill="#6ee7b7">&gt;</tspan> hackerx init</text>
+      <text x="20" y="100"><tspan fill="#6ee7b7">&gt;</tspan> Reading CLAUDE.md...</text>
+      <text x="20" y="132"><tspan fill="#6ee7b7">&gt;</tspan> Skill loaded: ui-pattern-picker</text>
+    </g>
+    <rect x="430" y="118" width="10" height="20" fill="#10b981"/>
+  </g>
+
+  <!-- Bottom-left URL + credit -->
+  <g transform="translate(72 580)" font-family="ui-monospace, 'SF Mono', monospace">
+    <text x="0" y="0" font-size="22" fill="#f5f5f4" font-weight="600">hackerx.app</text>
+    <text x="0" y="26" font-size="16" fill="#57534e">Built by DBAI</text>
+  </g>
+</svg>

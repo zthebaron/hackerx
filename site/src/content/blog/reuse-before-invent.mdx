@@ -1,0 +1,224 @@
+---
+title: "Reuse Before Invent"
+description: "Claude Code reinventing components is the number-one way codebases drift. Here is the CLAUDE.md that stops it."
+pubDate: 2026-04-29
+tags: ["claude-code", "claude-md", "codebase", "ui-ux"]
+author: "Tim De Vallee"
+draft: false
+---
+
+Open a typical AI-built codebase six months in. Search for "Card."
+
+You will find `Card`. Then `MetricCard`. Then `KpiCard`. Then `StatCard`. Then `DashboardCard`. Five components. One job. Five different paddings, five different shadow tokens, five different ways of handling the loading state.
+
+Claude Code did not do anything wrong on any individual session. It did the helpful thing every time — built a new `KpiCard` for the dashboard work because the existing `Card` did not have a value-and-label slot. Built `MetricCard` two weeks later because the analytics page was a slightly different layout. Built `StatCard` last week because the new homepage hero needed something punchier.
+
+Each session was reasonable. The aggregate is drift.
+
+Reuse before invent is the rule that prevents drift. It belongs in your CLAUDE.md and at the top of every UI prompt.
+
+## The rule, exactly
+
+```
+Before creating any new component, search the existing repo
+for components that already do this job or part of it.
+
+Prefer:
+1. Use the existing component as-is.
+2. Extend the existing component with a prop or variant.
+3. Compose the existing component with another existing one.
+4. Create a new component only after 1-3 are explicitly ruled out.
+
+When you do create a new component, justify why none of the
+existing components could be extended. Show me the components
+you considered and why each was rejected.
+```
+
+That is the rule. Drop it into CLAUDE.md and Claude Code stops inventing parallel components. Or rather, it stops inventing them silently — when it does need a new component, it has to defend the decision.
+
+## Why this is the number-one drift source
+
+Claude Code reads the request, scans the file you are in, and proceeds. By default, it does not grep the whole repo for an existing solution. It builds.
+
+That is fine for the first session. By session ten you have ten new components. By session fifty you have a parallel design system inside your design system.
+
+Drift compounds. Every new component creates new spacing decisions, new shadow decisions, new color decisions. Each of those gets copied into the *next* new component because Claude Code looks at the most-recently-edited file for style cues. Now you have a feedback loop that pulls the codebase further from coherence with every commit.
+
+Reuse before invent breaks the loop. It forces Claude to look at the *whole* repo before adding anything new.
+
+## The CLAUDE.md block
+
+Here is the block that goes into CLAUDE.md, ready to paste.
+
+```
+# Component reuse rules
+
+Before creating any new component:
+
+1. Grep the codebase for similar components. Search by:
+   - Name (Card, Button, Table, Filter, Drawer, Sheet, Dialog)
+   - Functionality (accepts a value and label? renders a list?
+     opens a side panel?)
+   - Visual pattern (rounded card with padding? toolbar row?)
+
+2. Show me the components you found. For each, explain:
+   - What it does
+   - Why it might fit (or might not)
+   - Whether it could be extended with a prop instead of forking
+
+3. Prefer in this order:
+   - Use the existing component as-is.
+   - Extend it with a prop or variant.
+   - Compose it with another existing component.
+   - Create a new component (last resort, with justification).
+
+4. When you do create a new component, name the existing
+   components you rejected and explain why none could be extended.
+
+5. Place new components next to siblings (e.g., a new card
+   variant goes in components/ui/ next to card.tsx, not in
+   components/dashboard/).
+```
+
+Drop that block into CLAUDE.md once. Every UI session in the repo follows it from then on. No re-pasting.
+
+## Weak prompt vs better prompt
+
+A real example. The user wants a metric card on a new analytics page.
+
+**Weak prompt:**
+
+```
+Add a metric card to /analytics that shows MRR with a
+trend delta.
+```
+
+What Claude does without the rule: creates `components/analytics/MetricCard.tsx`, ships it. You now have `Card` and `MetricCard` doing similar things. Next time someone needs a card-with-value-and-trend, they will not find `MetricCard` because it is buried in the analytics folder. They will create `KpiCard` or `StatCard`.
+
+**Better prompt:**
+
+```
+On /analytics, render a card that shows MRR with a trend delta.
+
+Before building, grep the repo for existing components that
+render a value, a label, and a trend. Show me what you found.
+Tell me whether any of them can be extended with a prop instead
+of creating a new component.
+
+If you do build a new component, place it in components/ui/
+not components/analytics/, and explain what existing components
+you rejected.
+```
+
+What Claude does with the rule: greps and finds `KpiCard` already exists in `components/ui/`. Uses it as-is, passes the MRR data and a trend prop. Zero new components. Codebase stays coherent.
+
+The better prompt is not magic. It is the rule from CLAUDE.md repeated inline because the user wanted to be sure. Once the rule is in CLAUDE.md, the inline repetition is unnecessary.
+
+## What "extend" actually looks like
+
+Most "new component" requests are really "this existing component needs one more prop." Reuse before invent forces that recognition.
+
+Example. The existing component:
+
+```tsx
+// components/ui/card.tsx
+export function Card({ title, children, footer }) {
+  return (
+    <div className="rounded-lg border p-4 shadow-sm">
+      {title && <h3 className="font-semibold">{title}</h3>}
+      {children}
+      {footer && <div className="mt-4 border-t pt-2">{footer}</div>}
+    </div>
+  )
+}
+```
+
+The vague request: "I need a card that shows MRR with a trend delta."
+
+Without the rule, Claude builds `MetricCard.tsx`.
+
+With the rule, Claude proposes:
+
+```tsx
+// Extension to existing Card
+export function Card({
+  title,
+  children,
+  footer,
+  value,           // new
+  trend,           // new: { delta: number, period: string }
+  variant = 'default'
+}) {
+  // existing rendering, plus:
+  // when value is set, render the value-and-trend layout
+  // inside children with the existing padding and border.
+}
+```
+
+Same component. One file changed. No drift.
+
+Sometimes the extension is unjustified — the new shape is genuinely different enough that extending `Card` would warp it. Fine. Then Claude builds `KpiCard` and *justifies why* `Card` could not be extended. The justification is the audit trail. You can read it later and decide whether the call was right.
+
+## Where new components belong when you do build them
+
+When you genuinely need a new component, the placement matters.
+
+```
+components/ui/         — primitives. Card, Button, Sheet, Tabs.
+components/dashboard/  — composites for /dashboard.
+components/forms/      — forms-specific composites.
+components/charts/     — chart wrappers.
+```
+
+A new metric card goes in `components/ui/` next to `card.tsx`, not in `components/dashboard/`. If it lives in dashboard, the next person needing a metric card will not find it. They will rebuild it. Drift.
+
+Add this to your CLAUDE.md:
+
+```
+Place new components in the most generic folder where they
+could be reused. A "metric card" goes in components/ui/.
+A "deal status badge" goes in components/ui/badge variants.
+A "RevenueChart" goes in components/charts/, not components/dashboard/.
+
+Use product-specific folders only for compositions that are
+genuinely scoped to a single product surface.
+```
+
+That single rule cuts the "I cannot find this component" search time across your whole team.
+
+## The grep prompt that catches drift before it lands
+
+Run this once a month on your repo.
+
+```
+Audit the components in this repo for duplication.
+
+For each domain (cards, buttons, badges, tables, drawers,
+forms), list every component that fills that role.
+
+For each set of duplicates, recommend:
+1. Which one is canonical.
+2. Which ones should be deleted or merged.
+3. The migration plan (which files import the duplicates,
+   what the rename looks like).
+
+Do not delete anything. Just report.
+```
+
+This is the cleanup pass. The first time you run it on an AI-built codebase, the report is uncomfortable — you will have 4-6 duplicates of every primitive. Each one looked reasonable when it was built. Together they are drift.
+
+After the audit, run the migration. After the migration, install the reuse-before-invent rule in CLAUDE.md so it does not happen again.
+
+## What this rule changes about your codebase
+
+Three things change.
+
+Your component count stops growing linearly with features. New features reuse 80% of existing primitives. The 20% that needs new components has a paper trail explaining why.
+
+Your design tokens stay consistent. Spacing, shadows, radii, type sizes — they live on the canonical components. New work inherits them by reuse instead of re-deciding them.
+
+New engineers find things. They grep for "Card" and find one. They grep for "Filter" and find one. The codebase becomes navigable instead of a junk drawer.
+
+That is the antidote to AI-driven drift. It is the difference between a codebase that gets better with every session and one that gets harder to work in.
+
+If you want the broader system this rule plugs into, [The Eight-Step Operating System](/blog/the-eight-step-operating-system/) makes reuse step 5. If you want to see it in a real session, the [demo walkthrough](/08-demonstrations/) shows reuse-before-invent in action — Card, Sheet, DataTable, Badge all reused from existing shadcn primitives. And if you want the moment when this practice produces product-quality work, see [From Vibe Coding to Product Quality](/blog/from-vibe-coding-to-product-quality/).

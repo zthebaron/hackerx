@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" role="img" aria-labelledby="faviconTitle">
+  <title id="faviconTitle">HackerX X mark</title>
+  <g stroke="#10b981" stroke-width="4" stroke-linecap="square" fill="none">
+    <line x1="6" y1="6" x2="26" y2="26"/>
+    <line x1="26" y1="6" x2="6" y2="26"/>
+  </g>
+</svg>

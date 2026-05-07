@@ -1,0 +1,278 @@
+---
+/**
+ * PatternTable — filterable view over the 42-pattern UI/UX vocabulary.
+ * Data ships inline as JSON; filtering is client-side, no network.
+ */
+
+const patterns = [
+  // Navigation
+  { c: 'navigation', name: 'Sidebar navigation', when: 'Many sections or dashboard pages', phrase: 'Add a collapsible sidebar with grouped navigation.' },
+  { c: 'navigation', name: 'Top navigation', when: 'Simple app with few major areas', phrase: 'Create a top nav with primary links and account actions.' },
+  { c: 'navigation', name: 'Breadcrumbs', when: 'Users move through nested pages', phrase: 'Add breadcrumbs so users know where they are.' },
+  { c: 'navigation', name: 'Tabs', when: 'Users switch between related views on the same page', phrase: 'Use tabs for Overview, Activity, Settings, and History.' },
+  { c: 'navigation', name: 'Segmented control', when: 'Users switch between 2–4 view modes', phrase: 'Add a segmented control for List, Board, and Calendar views.' },
+  { c: 'navigation', name: 'Stepper', when: 'Users complete a multi-step flow', phrase: 'Use a stepper for setup, review, and launch.' },
+  { c: 'navigation', name: 'Command palette', when: 'Power users need fast keyboard navigation', phrase: 'Add a command palette for search, navigation, and actions.' },
+  { c: 'navigation', name: 'Mega menu', when: 'Many grouped destinations need visual organization', phrase: 'Create a grouped mega menu for product sections.' },
+  { c: 'navigation', name: 'Drawer / sheet', when: 'Temporary panel from the side', phrase: 'Open details in a right-side sheet instead of a new page.' },
+  { c: 'navigation', name: 'Bottom nav', when: 'Mobile app with 3–5 core sections', phrase: 'Use bottom navigation on mobile.' },
+  // Disclosure
+  { c: 'disclosure', name: 'Accordion', when: 'Expandable stacked sections', phrase: 'Use accordions to reveal advanced settings.' },
+  { c: 'disclosure', name: 'Collapsible panel', when: 'One section needs show/hide', phrase: 'Make this filter area collapsible.' },
+  { c: 'disclosure', name: 'Dropdown menu', when: 'A button has multiple actions', phrase: 'Add a dropdown menu for row actions.' },
+  { c: 'disclosure', name: 'Context menu', when: 'Right-click or item-specific actions', phrase: 'Add a context menu for table rows.' },
+  { c: 'disclosure', name: 'Popover', when: 'Small temporary content near a trigger', phrase: 'Use a popover for quick filters.' },
+  { c: 'disclosure', name: 'Tooltip', when: 'A control needs a short explanation', phrase: 'Add tooltips for unclear icons.' },
+  { c: 'disclosure', name: 'Hover card', when: 'Preview information without navigation', phrase: 'Show a hover card with user details.' },
+  // Dashboard
+  { c: 'dashboard', name: 'KPI cards', when: 'Users need fast summary metrics', phrase: 'Add KPI cards with trend indicators.' },
+  { c: 'dashboard', name: 'Data table', when: 'Users scan, sort, filter, compare records', phrase: 'Use a data table with sorting, filtering, pagination, and row actions.' },
+  { c: 'dashboard', name: 'Saved views', when: 'Users reuse filters', phrase: 'Add saved views for common dashboard filters.' },
+  { c: 'dashboard', name: 'Faceted filters', when: 'Users narrow data by attributes', phrase: 'Add faceted filters for status, owner, date, and type.' },
+  { c: 'dashboard', name: 'Date range picker', when: 'Time matters', phrase: 'Add a date range picker with presets.' },
+  { c: 'dashboard', name: 'Chart cards', when: 'Metrics need visualization', phrase: 'Create chart cards for revenue, activity, and conversion.' },
+  { c: 'dashboard', name: 'Drill-down panel', when: 'Users need details behind a metric', phrase: 'Clicking a KPI should open a drill-down side panel.' },
+  { c: 'dashboard', name: 'Empty state', when: 'No data exists yet', phrase: 'Design an empty state with next-best action.' },
+  { c: 'dashboard', name: 'Skeleton loader', when: 'Data is loading', phrase: 'Use skeleton loaders that match the final layout.' },
+  { c: 'dashboard', name: 'Error state', when: 'Data failed to load', phrase: 'Add a recoverable error state with retry.' },
+  // Productivity
+  { c: 'productivity', name: 'Global search', when: 'Users need to find anything fast', phrase: 'Add global search across pages, records, and actions.' },
+  { c: 'productivity', name: 'Bulk actions', when: 'Users select many rows', phrase: 'Add checkbox selection and bulk actions.' },
+  { c: 'productivity', name: 'Inline edit', when: 'Small edits should not require a new page', phrase: 'Allow inline editing for status and owner.' },
+  { c: 'productivity', name: 'Keyboard shortcuts', when: 'Power users repeat actions', phrase: 'Add keyboard shortcuts and a shortcut help modal.' },
+  { c: 'productivity', name: 'Activity feed', when: 'Users need history of changes', phrase: 'Add an activity feed with timestamps and actors.' },
+  { c: 'productivity', name: 'Notification center', when: 'Users need updates', phrase: 'Add a notification center with unread state.' },
+  { c: 'productivity', name: 'Audit log', when: 'Teams need accountability', phrase: 'Add an audit log for important changes.' },
+  { c: 'productivity', name: 'Comments', when: 'Collaboration matters', phrase: 'Add comments on records with mentions.' },
+  // Layout
+  { c: 'layout', name: 'Split pane', when: 'Users compare list and detail', phrase: 'Use a split-pane layout with list on the left and detail on the right.' },
+  { c: 'layout', name: 'Master-detail', when: 'Users select an item and inspect it', phrase: 'Create a master-detail workflow.' },
+  { c: 'layout', name: 'Card grid', when: 'Items are visual or scannable', phrase: 'Use a responsive card grid.' },
+  { c: 'layout', name: 'Kanban board', when: 'Items move through statuses', phrase: 'Add a kanban board grouped by status.' },
+  { c: 'layout', name: 'Timeline', when: 'Sequence matters', phrase: 'Show events in a timeline.' },
+  { c: 'layout', name: 'Wizard', when: 'Setup needs guidance', phrase: 'Turn this into a guided wizard.' },
+  { c: 'layout', name: 'Dashboard shell', when: 'Whole app needs structure', phrase: 'Create an app shell with sidebar, top bar, content area, and responsive mobile nav.' },
+  // Feedback
+  { c: 'feedback', name: 'Toast', when: 'Small action feedback', phrase: 'Show a toast after saving.' },
+  { c: 'feedback', name: 'Alert banner', when: 'Important system message', phrase: 'Add an alert banner for account issues.' },
+  { c: 'feedback', name: 'Confirmation dialog', when: 'Risky action', phrase: 'Require confirmation before deleting.' },
+  { c: 'feedback', name: 'Undo action', when: 'Mistakes are likely', phrase: 'Show an undo toast after archive/delete.' },
+  { c: 'feedback', name: 'Progress indicator', when: 'Long task', phrase: 'Show progress while importing data.' },
+  { c: 'feedback', name: 'Status badge', when: 'State at a glance', phrase: 'Add badges for Active, Paused, Failed, Draft.' },
+  { c: 'feedback', name: 'Validation message', when: 'Form input can fail', phrase: 'Add inline validation with helpful messages.' },
+];
+
+const categories = [
+  { id: 'all', label: 'All', count: patterns.length },
+  { id: 'navigation', label: 'Navigation', count: patterns.filter(p => p.c === 'navigation').length },
+  { id: 'disclosure', label: 'Disclosure', count: patterns.filter(p => p.c === 'disclosure').length },
+  { id: 'dashboard', label: 'Dashboard', count: patterns.filter(p => p.c === 'dashboard').length },
+  { id: 'productivity', label: 'Productivity', count: patterns.filter(p => p.c === 'productivity').length },
+  { id: 'layout', label: 'Layout', count: patterns.filter(p => p.c === 'layout').length },
+  { id: 'feedback', label: 'Feedback', count: patterns.filter(p => p.c === 'feedback').length },
+];
+---
+
+<div class="hx-pattern-table" data-pattern-table>
+  <div class="hx-pattern-controls">
+    <label class="hx-pattern-search">
+      <span class="sr-only">Search patterns</span>
+      <input
+        type="search"
+        placeholder="Filter patterns... (e.g. 'cluttered', 'data', 'mobile')"
+        data-pattern-search
+        autocomplete="off"
+      />
+    </label>
+    <div class="hx-pattern-filters" role="tablist" aria-label="Pattern category">
+      {categories.map(cat => (
+        <button
+          type="button"
+          class="hx-pattern-filter"
+          data-filter={cat.id}
+          aria-pressed={cat.id === 'all'}
+          role="tab"
+        >
+          {cat.label}
+          <span class="hx-pattern-count">{cat.count}</span>
+        </button>
+      ))}
+    </div>
+  </div>
+
+  <div class="hx-pattern-grid" data-pattern-grid>
+    {patterns.map(p => (
+      <article class="hx-pattern-row" data-category={p.c} data-search={`${p.name} ${p.when} ${p.phrase}`.toLowerCase()}>
+        <header>
+          <span class="hx-pattern-cat">{p.c}</span>
+          <h3>{p.name}</h3>
+        </header>
+        <p class="hx-pattern-when"><strong>Use it when:</strong> {p.when}</p>
+        <code class="hx-pattern-phrase">{p.phrase}</code>
+      </article>
+    ))}
+  </div>
+
+  <p class="hx-pattern-empty" data-pattern-empty hidden>
+    No patterns match. Try a different filter or clear the search.
+  </p>
+</div>
+
+<style>
+  .hx-pattern-table {
+    margin-block: 2rem;
+  }
+  .hx-pattern-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+  .hx-pattern-search input {
+    width: 100%;
+    padding: 0.625rem 0.875rem;
+    background: var(--sl-color-bg-sidebar);
+    border: 1px solid var(--sl-color-gray-5);
+    border-radius: 0.375rem;
+    color: var(--sl-color-text);
+    font-size: 0.95rem;
+  }
+  .hx-pattern-search input:focus {
+    outline: 2px solid var(--sl-color-accent);
+    outline-offset: 1px;
+    border-color: var(--sl-color-accent);
+  }
+  .hx-pattern-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375rem;
+  }
+  .hx-pattern-filter {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.375rem 0.75rem;
+    background: transparent;
+    color: var(--sl-color-text);
+    border: 1px solid var(--sl-color-gray-5);
+    border-radius: 999px;
+    font: inherit;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 120ms ease;
+  }
+  .hx-pattern-filter:hover {
+    border-color: var(--sl-color-text-accent);
+  }
+  .hx-pattern-filter[aria-pressed='true'] {
+    background: var(--sl-color-text-accent);
+    color: var(--sl-color-text-invert);
+    border-color: var(--sl-color-text-accent);
+  }
+  .hx-pattern-count {
+    font-family: var(--__sl-font-mono);
+    font-size: 0.75rem;
+    opacity: 0.7;
+  }
+  .hx-pattern-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 0.75rem;
+  }
+  .hx-pattern-row {
+    padding: 1rem;
+    background: var(--sl-color-bg-sidebar);
+    border: 1px solid var(--sl-color-gray-5);
+    border-radius: 0.5rem;
+    transition: border-color 120ms ease, transform 120ms ease;
+  }
+  .hx-pattern-row:hover {
+    border-color: var(--sl-color-text-accent);
+  }
+  .hx-pattern-row[hidden] {
+    display: none;
+  }
+  .hx-pattern-cat {
+    display: inline-block;
+    padding: 0.125rem 0.5rem;
+    margin-bottom: 0.5rem;
+    background: var(--sl-color-bg-inline-code);
+    color: var(--sl-color-text-accent);
+    border-radius: 0.25rem;
+    font: 0.7rem var(--__sl-font-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .hx-pattern-row h3 {
+    margin: 0 0 0.5rem;
+    font-size: 1.05rem;
+  }
+  .hx-pattern-when {
+    margin: 0 0 0.75rem;
+    color: var(--sl-color-gray-2);
+    font-size: 0.875rem;
+  }
+  .hx-pattern-phrase {
+    display: block;
+    padding: 0.5rem 0.625rem;
+    background: var(--sl-color-bg);
+    border-left: 2px solid var(--sl-color-text-accent);
+    color: var(--sl-color-text);
+    font-size: 0.85rem;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .hx-pattern-empty {
+    text-align: center;
+    color: var(--sl-color-gray-3);
+    margin-top: 2rem;
+  }
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+  }
+</style>
+
+<script>
+  const table = document.querySelector<HTMLElement>('[data-pattern-table]');
+  if (table) {
+    const search = table.querySelector<HTMLInputElement>('[data-pattern-search]');
+    const filters = table.querySelectorAll<HTMLButtonElement>('.hx-pattern-filter');
+    const rows = table.querySelectorAll<HTMLElement>('.hx-pattern-row');
+    const empty = table.querySelector<HTMLElement>('[data-pattern-empty]');
+    let currentCategory = 'all';
+    let currentQuery = '';
+
+    function apply() {
+      let visible = 0;
+      rows.forEach((row) => {
+        const cat = row.dataset.category ?? '';
+        const text = row.dataset.search ?? '';
+        const matchesCat = currentCategory === 'all' || cat === currentCategory;
+        const matchesQuery = !currentQuery || text.includes(currentQuery);
+        const show = matchesCat && matchesQuery;
+        row.hidden = !show;
+        if (show) visible++;
+      });
+      if (empty) empty.hidden = visible !== 0;
+    }
+
+    filters.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        filters.forEach((b) => b.setAttribute('aria-pressed', 'false'));
+        btn.setAttribute('aria-pressed', 'true');
+        currentCategory = btn.dataset.filter ?? 'all';
+        apply();
+      });
+    });
+
+    search?.addEventListener('input', () => {
+      currentQuery = (search.value || '').trim().toLowerCase();
+      apply();
+    });
+  }
+</script>

@@ -1,0 +1,147 @@
+---
+title: "The Three Options Rule"
+description: "Forcing three design directions beats picking the first thing Claude Code suggests. Here is the template and a real output."
+pubDate: 2026-04-05
+tags: ["claude-code", "ui-ux", "design-process", "prompts"]
+author: "Tim De Vallee"
+draft: false
+---
+
+The single biggest reason your AI-built UI looks generic is that you accepted the first thing Claude Code suggested.
+
+Not because the first thing was bad. Because there was nothing to compare it against.
+
+Without rivals, there is no real choice. Without choice, you ship the first thing that compiles.
+
+## The rule
+
+Every UI request returns at least three options. Always.
+
+```
+1. Safe and familiar
+2. Modern SaaS / dashboard
+3. Premium / power-user
+```
+
+That is the template. Drop it into any prompt and you have changed how Claude Code answers forever.
+
+The three labels are doing real work. "Safe" forces a low-risk version that any user could pick up. "Modern SaaS" forces a version that looks like Linear, Vercel, or Notion in 2026. "Power-user" forces a version with the keyboard shortcuts, bulk actions, and saved views your most demanding users will love.
+
+When you read all three, the right one becomes obvious. Sometimes it is option 2. Sometimes it is option 1, because the team is small and option 2 is overkill. Sometimes it is a hybrid — "go with option 2, but borrow the saved views from option 3." That hybrid never appears if you only saw one option.
+
+## Why one option always loses
+
+A single option from Claude Code looks competent. It compiles. It runs. The screenshots are fine.
+
+But "fine" is the failure mode of vibe coding. Fine looks like a prototype. Fine looks like every other AI-built dashboard on the internet. Fine is the thing your users tolerate but do not love.
+
+When you only see one design, you have no language to describe what is missing. You sit there thinking "it's missing something." That is the diagnostic gap. Three options closes the gap by making the missing piece visible — it is the thing in option 3 that option 1 left out.
+
+## A real three-options output
+
+Here is what a three-options response actually looks like. The user said: "the table on /deals feels weak."
+
+```
+Diagnosis: missing power-user features for data work.
+
+Option 1 — Lightweight upgrade (Safe)
+  What changes: add column sort, simple text filter, row hover actions.
+  Why it helps: the obvious wins, no learning curve.
+  Components: existing DataTable, DropdownMenu.
+  Difficulty: low (~2 hours).
+  Risks: plateaus quickly — power users will outgrow it in a quarter.
+
+Option 2 — Full data grid (Modern SaaS)
+  What changes: faceted filters, saved views, column visibility,
+  density toggle, bulk actions, row drawer for detail.
+  Why it helps: matches the table experience in Linear and Attio.
+  Components: existing DataTable + Sheet + Badge, plus a new
+  FacetedFilter (~80 LOC) and SavedViews (~60 LOC).
+  Difficulty: medium (~1 day).
+  Risks: more surface to learn; new components to maintain.
+
+Option 3 — Dual-mode table + kanban (Power-user)
+  What changes: option 2 plus a view switcher between table and
+  kanban grouped by status.
+  Why it helps: deals have a strong status pipeline; kanban shows
+  flow visually.
+  Components: option 2 + a Kanban component (~200 LOC) + dnd-kit.
+  Difficulty: high (~2-3 days).
+  Risks: dnd-kit adds a dependency; kanban is heavy to maintain.
+
+Recommendation: Option 2 for most teams. Move to option 3 only if
+deals genuinely flow through a fixed pipeline and the team uses
+status as the primary lens.
+```
+
+Now you can pick. Now the picking is real, because each option came with tradeoffs you can argue about. That argument is what produces a defensible design choice — one you can explain to a teammate, a designer, or a user.
+
+## The prompt that forces three options
+
+Drop this into your CLAUDE.md or the start of any UI session.
+
+```
+For every UI change request, do the following before writing code:
+
+1. Diagnose the user goal in one sentence.
+2. Propose three pattern options:
+   - Option 1: safe and familiar
+   - Option 2: modern SaaS / dashboard
+   - Option 3: premium / power-user
+3. For each option, give:
+   - what changes
+   - why it helps users
+   - components used (prefer existing in this repo)
+   - difficulty (low / medium / high)
+   - risks or tradeoffs
+4. Recommend one and explain why for this product and audience.
+5. Wait for me to pick before coding.
+```
+
+Notice what this does. It forces Claude to slow down. It forces it to read the repo so the "components used" line is accurate. It forces it to commit to a recommendation, which is the real value-add — without a recommendation you are still doing the picking yourself.
+
+## Why the three labels matter
+
+You could ask for "three design options" and get back three barely-different UIs. The Safe / Modern / Power-user split prevents that.
+
+Safe is anchored in patterns the user has seen for ten years. Tabs. Sidebar. Modal. Single-column. Risk: low. Ceiling: low.
+
+Modern SaaS is anchored in 2025-2026 patterns. Dashboard shell. KPI cards with trend deltas. Faceted filters. Drawer for detail. Risk: medium. Ceiling: high.
+
+Power-user is anchored in patterns built for daily users. Command palette. Keyboard shortcuts. Saved views. Bulk actions. Inline edit. Risk: medium-high. Ceiling: very high — but only if your users actually live in the product.
+
+The labels force three points along that risk-ceiling curve. The right answer for your product is somewhere on that curve. If Claude only gave you one point, you would not know which.
+
+## When three is wrong
+
+Sometimes there are not three real options. Maybe the request is "add a confirmation dialog before delete." There is one good answer: add the dialog. Forcing three options here just produces noise.
+
+Use judgment. The rule is "at least three options when the design space is open." A delete confirmation, a typo fix, a bug — those have one right answer. A new dashboard, a new flow, a redesign — those need three.
+
+The [eight-step OS](/blog/the-eight-step-operating-system/) puts it cleanly: name the pattern options first. If there is genuinely only one option, say so. If there are several, propose three. Either way, never just code the first thing.
+
+## The compounding effect
+
+Once Claude Code is producing three options every session, three things happen.
+
+You start picking faster. After ten sessions you can read a three-options output in 30 seconds because you recognize the categories.
+
+You stop accepting mediocre UI. You see option 2 next to option 3 and you cannot un-see what option 3 offers. The bar moves up.
+
+You start *generating* options yourself, in your head, before you prompt. You walk into the session knowing this is a "split-pane vs master-detail vs single-page-with-tabs" decision. Now your prompt names all three and asks Claude to compare. The session is over in one round.
+
+This is the [vocabulary compounding](/blog/vocabulary-is-the-100x/) at work. Three options is the forcing function. Vocabulary is what gets sharpened by the friction.
+
+## The one prompt to internalize
+
+If you remember nothing else from this article, remember this:
+
+```
+Show me three options before you code.
+```
+
+That sentence, added to any UI request, lifts the ceiling on every result Claude Code gives you. Use it on every screen, every component, every redesign. After a month it will feel weird *not* to see three options.
+
+That is the moment vibe coding starts producing product-quality work.
+
+If you want the full ritual around three options — explore, diagnose, propose, verify — read [Claude Code as a Design Partner](/blog/claude-code-as-a-design-partner/). For the deeper "why" on the master prompt, see [The Master Prompt Anatomy](/blog/the-master-prompt-anatomy/).

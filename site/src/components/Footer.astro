@@ -1,0 +1,41 @@
+---
+import Default from '@astrojs/starlight/components/Footer.astro';
+---
+
+<Default><slot /></Default>
+
+<div class="hx-footer">
+  <p class="hx-footer-attr">
+    Built by <a href="https://digitalboutique.ai" rel="noopener">DBAI</a>
+    · Architect <a href="https://digitalboutique.ai" rel="noopener">Tim De Vallee</a>
+    · <a href="https://github.com/zthebaron/hackerx">github</a>
+    · <a href="/blog/">blog</a>
+  </p>
+  <p class="hx-footer-tag">Stop saying "make it better." Pick a pattern.</p>
+</div>
+
+<style>
+  .hx-footer {
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--sl-color-gray-5);
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--sl-color-gray-3);
+  }
+  .hx-footer-attr a {
+    color: var(--sl-color-text-accent);
+    text-decoration: none;
+    font-weight: 500;
+  }
+  .hx-footer-attr a:hover {
+    text-decoration: underline;
+  }
+  .hx-footer-tag {
+    margin-top: 0.5rem;
+    font-family: var(--__sl-font-mono);
+    font-size: 0.75rem;
+    color: var(--sl-color-gray-4);
+    letter-spacing: 0.02em;
+  }
+</style>

@@ -1,0 +1,193 @@
+---
+title: "Claude Code as a Design Partner"
+description: "Stop using Claude Code as autocomplete. The four-phase workflow turns it into the design partner you never hired."
+pubDate: 2026-04-15
+tags: ["claude-code", "ui-ux", "design-process", "workflow"]
+author: "Tim De Vallee"
+draft: false
+---
+
+Most teams use Claude Code as a faster keyboard. They open a file, type a comment, accept a completion. Then they wonder why the UI still looks like a prototype.
+
+Claude Code is not autocomplete. Used right, it is the senior product designer you cannot afford to hire and the front-end architect you do not have on staff. The unlock is using it *before* you write code, not while you are writing it.
+
+The four-phase workflow is how.
+
+## The four phases
+
+```
+1. Explore   — Claude reads your repo before talking.
+2. Diagnose  — Claude names the user problem behind the request.
+3. Propose   — Claude returns three pattern options with tradeoffs.
+4. Verify    — Claude confirms typecheck, lint, responsive, a11y.
+```
+
+Three of those four phases are not coding. That is the point. Coding is the easy part. Knowing *what* to code is where 100x lives.
+
+## Phase 1: Explore
+
+Before Claude Code says anything about your UI, it reads your repo.
+
+```
+Inspect the codebase first. Tell me:
+1. What product type this is (CRM / analytics / SaaS / admin / AI / other).
+2. The routing structure.
+3. The component library and which primitives we already have.
+4. The data layer (which client, which queries, which patterns).
+5. The current design system: color tokens, spacing scale, type hierarchy.
+
+Do not propose changes yet. Just report what you found.
+```
+
+This is the prompt that prevents 80% of the bad sessions. Without it, Claude proposes a sidebar even though you have one. Proposes installing react-table even though shadcn's DataTable is right there. Proposes a `KpiCard` even though `MetricCard` is in your repo and three other features depend on it.
+
+With it, every subsequent recommendation is grounded in your actual codebase. The opportunity map becomes accurate. The implementation plan becomes a real diff, not a parallel system.
+
+Spend 90 seconds on Explore at the start of every meaningful UI session. That 90 seconds saves you two hours of "we already have that" later.
+
+## Phase 2: Diagnose
+
+The user said "make this dashboard better." Diagnosis is what they meant.
+
+Claude Code's job in this phase is to translate the gesture into a problem. Not a UI problem. A *user* problem.
+
+```
+The user request was: "make this dashboard better."
+
+Before proposing UI changes, diagnose the actual user goal.
+
+What is the user trying to do faster, more clearly, or more
+confidently? Phrase it as a sentence: "Users want to <goal>
+but currently <obstacle>."
+
+Give me three candidate diagnoses ranked by likelihood.
+Ask me which one is right before continuing.
+```
+
+Three candidate diagnoses. Not one. Diagnosis is exactly the kind of thing that benefits from the [three options rule](/blog/the-three-options-rule/) — the wrong diagnosis produces the wrong UI even if every later step is flawless.
+
+Common diagnoses for "make this dashboard better":
+
+1. Users cannot see the top-line numbers fast enough → KPI cards with trend deltas.
+2. Users cannot filter the table to their own work → faceted filter by owner + saved views.
+3. Users cannot drill from a number to the records behind it → drill-down side panel.
+
+Each diagnosis points to a completely different design. The wrong diagnosis sends you down a 90-minute path you will throw away. The right diagnosis sends you down a 30-minute path you will ship.
+
+## Phase 3: Propose
+
+You have explored. You have diagnosed. Now Claude proposes three pattern options.
+
+```
+Given the diagnosis (users cannot drill from a KPI to the records
+behind it), propose three patterns:
+
+Option 1 — Safe and familiar.
+Option 2 — Modern SaaS.
+Option 3 — Power-user.
+
+For each:
+- What changes
+- Why it helps
+- Components used (prefer existing in this repo)
+- Difficulty (low / medium / high)
+- Risks
+
+Recommend one and explain why for this product. Do not code yet.
+```
+
+This is the heart of the workflow. Three options, real tradeoffs, grounded in components that already exist in your repo. You read three. You pick one. Sometimes you pick a hybrid — "go with option 2 but borrow the saved views from option 3." That hybrid is only visible because three options were on the page.
+
+Crucially: "do not code yet." The gate exists for a reason. Without it Claude is helpful in the worst way — it picks option 2 for you and starts implementing while you were still reading option 3. Now you have unwanted code, a polluted branch, and a session that has left design mode.
+
+## Phase 4: Verify
+
+This is where most teams stop. They ship as soon as the typecheck passes. That is "compiled," not "shipped."
+
+```
+After implementation, run the verification loop:
+
+1. pnpm typecheck — must pass with zero errors.
+2. pnpm lint — must pass with zero errors.
+3. Responsive review at 375, 768, and 1280. Take screenshots
+   at each breakpoint.
+4. Accessibility review:
+   - Tab through every interactive element. Focus must be visible.
+   - Run color-contrast on labels and trend deltas.
+   - Verify ARIA roles on dialogs, tabs, accordions.
+5. Loading, empty, and error states render correctly.
+6. If a test suite exists, run it.
+
+Report each check with a pass/fail. Flag anything that needs
+human review.
+```
+
+[Verification Is Not Typecheck](/blog/verification-is-not-typecheck/) covers this in depth. The short version: "done" means typecheck plus lint plus responsive plus accessibility plus state coverage. Anything less and you are shipping a prototype that compiles.
+
+## The before/after
+
+Here is what changes when you switch from autocomplete-mode to design-partner-mode.
+
+**Before — autocomplete mode**
+
+You open a file. You type a comment. Claude completes the function. The UI works. You commit. You ship. A week later your codebase has three components doing the same job, none of them named consistently, half of them missing accessibility. You revisit the screen and cannot remember why you made the choices you made.
+
+**After — design partner mode**
+
+You open a session. You paste the [master prompt](/02-master-prompts/master-prompt/). Claude reads the repo (Explore). Claude diagnoses three candidate user goals and asks which is right (Diagnose). Claude returns three pattern options with tradeoffs and recommends one (Propose). You pick. Claude implements in small commits. After each commit, Claude runs the verification loop (Verify). You ship one cohesive feature that reuses existing components, has documented tradeoffs, and passes accessibility on day one.
+
+The first version takes 90 minutes including the back-and-forth. The second version takes 90 minutes from kickoff to shipped. The cycle time is roughly the same. The output quality is not in the same league.
+
+## A copy-paste session opener
+
+Drop this into the start of any meaningful UI session.
+
+```
+Use the four-phase workflow.
+
+Phase 1 — Explore.
+Read the repo. Tell me: product type, routes, components, data
+layer, design tokens. Do not propose changes yet.
+
+Phase 2 — Diagnose.
+Translate my request into the user problem behind it. Give me
+three candidate diagnoses ranked by likelihood. Ask which is right.
+
+Phase 3 — Propose.
+Three pattern options (safe / modern SaaS / power-user). For each:
+what changes, why it helps, components used, difficulty, risks.
+Recommend one. Do not code yet.
+
+Phase 4 — Verify.
+After implementation: typecheck, lint, responsive at 375/768/1280,
+accessibility (focus, contrast, keyboard), loading/empty/error
+states, screenshots. Report pass/fail.
+
+My request is: <paste your request here>
+```
+
+Save it. Use it. After ten sessions the four phases will feel as natural as opening the editor.
+
+## When to skip a phase
+
+Skip Explore for trivial fixes. A typo, a copy change, a one-line bug — you do not need a full repo audit.
+
+Skip Diagnose when the request is already specific. "Add a confirmation dialog before delete on the deals table" is a request, not a vague gesture. Diagnosis is unnecessary friction.
+
+Never skip Propose for design work. Even on small changes, three options exposes tradeoffs you would not have considered.
+
+Never skip Verify. Verification is not optional. The whole [eight-step OS](/blog/the-eight-step-operating-system/) hinges on it.
+
+## What this changes about your week
+
+When Claude Code is your design partner, three things change.
+
+You design more screens. Cycle time per screen drops because the wrong path gets caught in the Explore or Diagnose phase, before code is written.
+
+Your codebase stays coherent. The reuse-before-invent pressure in the Propose phase keeps `Card`, `KpiCard`, and `MetricCard` from becoming three parallel components. See [Reuse Before Invent](/blog/reuse-before-invent/).
+
+You learn faster. Every session teaches you 2-3 new pattern names because the Propose phase forces named tradeoffs. After 20 sessions you are speaking the language fluently and the prompts get even sharper.
+
+That is the 100x in practice. Not faster typing. Faster *thinking*, externalized through Claude Code, with the verification loop catching the rest.
+
+For the operating system that wraps these four phases into eight steps you can drop into any repo, read [The Eight-Step Operating System](/blog/the-eight-step-operating-system/). For the moment when this practice produces product-quality work, see [From Vibe Coding to Product Quality](/blog/from-vibe-coding-to-product-quality/).

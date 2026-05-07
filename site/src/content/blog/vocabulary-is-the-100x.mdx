@@ -1,0 +1,172 @@
+---
+title: "Vocabulary Is The 100x"
+description: "Naming patterns is the unlock. Six vague requests, six named patterns, and a sharper prompt for each."
+pubDate: 2026-04-08
+tags: ["claude-code", "ui-ux", "vocabulary", "patterns"]
+author: "Tim De Vallee"
+draft: false
+---
+
+You can feel the screen is wrong. You know users need "some kind of menu thing." You can describe the problem to a friend, gesturing at the laptop, in two minutes flat.
+
+You cannot prompt Claude Code to fix it.
+
+That is the gap. Not skill. Not taste. Vocabulary.
+
+The 100x in HackerX is not a fancier model or a secret prompt. It is the moment you stop pointing at screens vaguely and start naming the pattern. Once you have the name, the prompt writes itself. Claude Code stops guessing. Your codebase stays coherent. You ship.
+
+## Six vague requests, six named patterns
+
+Below are six requests every founder has typed at least once. Each one is followed by the named pattern from the [42-pattern cheat sheet](/03-ui-ux-vocabulary/full-cheat-sheet/) and the prompt you should have used.
+
+### 1. "This page feels cluttered"
+
+You have too much visible at once. There is no visual hierarchy and no way to tuck the rarely-used controls out of sight.
+
+The pattern: **accordion** (for stacked expandable sections), **drawer** (for advanced fields tucked to the side), or **tabs** (for parallel views that share context).
+
+```
+Weak:  this settings page feels cluttered, clean it up
+
+Better: On /settings, group fields into Account, Notifications,
+        Billing, and Advanced. Use accordion for the four sections,
+        with Advanced collapsed by default. Reuse Accordion from
+        components/ui/accordion.tsx. Show me before/after layouts
+        before coding.
+```
+
+The named pattern carries the contract. Accordion = stacked, expandable, one-click reveal, keyboard accessible, ARIA-correct. Claude Code knows all of that. You did not have to spell it out.
+
+### 2. "Hard to move around"
+
+Users get lost. They cannot find pages. They keep using the back button.
+
+The pattern: **sidebar navigation**, **breadcrumbs**, **command palette**, or some combination.
+
+```
+Weak:  navigation is bad, fix it
+
+Better: Add breadcrumbs to /deals, /contacts, /activities so users
+        know where they are inside the CRM. Add a command palette
+        triggered by cmd+k for fast jump-to-page and jump-to-record.
+        Use cmdk and the existing Sidebar. Three options on the
+        command palette layout, then implement.
+```
+
+Breadcrumbs answer "where am I." Command palette answers "how do I get somewhere fast." Sidebar answers "what are my main areas." Three different problems, three different patterns. Naming each one keeps Claude from trying to cram all three solutions into one component.
+
+### 3. "Too many actions"
+
+A row has eight buttons. A toolbar has fourteen. The user squints.
+
+The pattern: **dropdown menu** (for grouped actions), **context menu** (for item-specific actions), **toolbar with overflow** (for primary + secondary), or **command palette** (for power users).
+
+```
+Weak:  too many buttons, hide some
+
+Better: On the deals table, keep Edit and Status as inline buttons.
+        Move Archive, Duplicate, Export, and Delete into a row-level
+        dropdown menu (three-dot trigger). Use existing
+        DropdownMenu. Verify keyboard navigation and focus return.
+```
+
+"Hide some" is undefined. "Move four specific actions into a dropdown menu while keeping two primary buttons inline" is a contract Claude Code can ship against.
+
+### 4. "Hard to compare data"
+
+Users have to flip between pages, lose context, scroll, swear.
+
+The pattern: **split-pane**, **master-detail**, **data table with pinned columns**, or **side-by-side drawer**.
+
+```
+Weak:  make it easier to compare deals
+
+Better: Convert /deals into a master-detail layout: list on the left
+        (existing DataTable), detail on the right in a Sheet that
+        opens when you click a row. Keep the URL in sync so detail
+        is shareable. Reuse DataTable, Sheet, useRouter. Show three
+        layout splits (40/60, 50/50, 30/70) and recommend one.
+```
+
+Master-detail is one of the highest-leverage patterns in the cheat sheet. It turns "I have to keep navigating" into "I can scan and inspect in the same session." Naming it lights up the entire pattern in Claude's head.
+
+### 5. "Needs to feel modern"
+
+The screen looks like 2014. Boxy. Flat. Default-sans. No visual hierarchy.
+
+The pattern: **dashboard shell** (sidebar + topbar + content), **card grid**, **type hierarchy**, **density review**.
+
+```
+Weak:  make this feel modern
+
+Better: The /dashboard layout looks dated. Apply the dashboard shell
+        pattern: collapsible sidebar, top bar with breadcrumbs and
+        user menu, content area with card grid. Audit type
+        hierarchy — h1 page title, h2 card titles, body text. Use
+        shadcn Card, Separator, and the existing Sidebar. Three
+        density options (compact / default / comfortable) and
+        recommend one.
+```
+
+"Modern" by itself is a vibe. "Dashboard shell + card grid + type hierarchy" is three named patterns Claude Code can implement and you can verify.
+
+### 6. "Needs AI"
+
+Every product needs AI now. The request is real. The prompt is usually wrong.
+
+The pattern: **assistant drawer**, **prompt input**, **streaming response**, **tool-call timeline**, **citations**.
+
+```
+Weak:  add AI to this dashboard
+
+Better: Add an AI assistant drawer (right-side Sheet) on /dashboard.
+        Inside: a prompt input pinned bottom, a streaming response
+        area, and a tool-call timeline showing what the assistant
+        looked at. Use Vercel AI Elements where possible. Three
+        layout options for the drawer (compact / split / full-page
+        when expanded). Recommend one.
+```
+
+Each pattern in that prompt — drawer, prompt input, streaming response, tool-call timeline — is a named thing with conventions. Claude Code does not need you to invent the AI UI. It needs you to point at the right shelf.
+
+## Why naming the pattern is the multiplier
+
+Every named pattern carries five things at once.
+
+A visual contract. The user already knows what it looks like.
+
+An accessibility contract. ARIA roles, focus management, keyboard shortcuts.
+
+A component contract. The library you already use almost certainly has it.
+
+A test contract. You know how to verify it because the pattern has known states.
+
+A cross-team contract. You can hand the prompt to a designer or another engineer and they understand the same thing.
+
+When you say "make it better," you are throwing away all five contracts. When you say "accordion" or "command palette" or "faceted filter," you are activating all five. That is what changes 1x output into 100x output.
+
+## How to learn the vocabulary fast
+
+Three steps.
+
+First, skim the [full cheat sheet](/03-ui-ux-vocabulary/full-cheat-sheet/) once. You will not memorize it. You will not need to. You only need to know the categories — Navigation, Disclosure, Dashboard, Productivity, Layout, Trust and Feedback — and that there are 42 named patterns inside.
+
+Second, install the [UI Pattern Picker skill](/07-skills/installing-skills/). Now when you type "this feels cluttered," Claude Code translates it into three named patterns automatically. You read the names. You pick. Over a few weeks you have absorbed the vocabulary by exposure.
+
+Third, end every prompt with "use the correct UI/UX vocabulary so I can learn." That single line, taken from the [master prompt](/02-master-prompts/master-prompt/), turns every session into a teaching session. After 20 sessions you are speaking the language fluently.
+
+## The compounding curve
+
+Vocabulary compounds in a way that nothing else in this craft compounds.
+
+Session 1: you knew zero patterns. You typed "make it better." You got mediocre output.
+
+Session 10: you know "sidebar," "tabs," "drawer," "card grid." Your prompts hit harder. Output is sharper.
+
+Session 50: you know "faceted filter," "master-detail," "drill-down panel," "saved views," "command palette." You walk into a session already knowing which two patterns are competing. Your prompts produce three options that are actually different. You are picking from real choices.
+
+Session 200: you are designing screens in your head before you open Claude Code. The session is now a 5-minute confirmation pass instead of a 90-minute redesign.
+
+That is the 100x. Not because Claude got faster. Because you got more precise.
+
+If you only learn one thing from HackerX, learn the vocabulary. Read [Stop Saying Make It Better](/blog/stop-saying-make-it-better/) for the simplest swap, [The Three Options Rule](/blog/the-three-options-rule/) for the picking framework, and [Reuse Before Invent](/blog/reuse-before-invent/) for keeping your codebase coherent while you ship.

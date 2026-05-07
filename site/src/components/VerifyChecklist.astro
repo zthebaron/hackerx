@@ -1,0 +1,92 @@
+---
+interface Item {
+  label: string;
+  command?: string;
+  description?: string;
+}
+interface Props {
+  title?: string;
+  items?: Item[];
+}
+
+const defaultItems: Item[] = [
+  { label: 'Typecheck', command: 'pnpm typecheck', description: 'No TS errors. Strict mode on.' },
+  { label: 'Lint', command: 'pnpm lint', description: 'Zero warnings allowed.' },
+  { label: 'Tests', command: 'pnpm test', description: 'If they exist.' },
+  { label: 'Responsive', description: '375px, 768px, 1280px — content reflows, no horizontal scroll.' },
+  { label: 'Keyboard nav', description: 'Tab cycles in logical order. No traps. Focus visible.' },
+  { label: 'Color contrast', description: 'WCAG AA minimum (4.5:1 body / 3:1 large text).' },
+  { label: 'Loading / empty / error', description: 'Each data area has all three states.' },
+  { label: 'Screenshot', description: 'Diff against the previous version if a baseline exists.' },
+];
+
+const { title = 'Verification', items = defaultItems } = Astro.props;
+---
+
+<aside class="hx-verify" aria-labelledby="hx-verify-title">
+  <h3 id="hx-verify-title" class="hx-verify-title">{title}</h3>
+  <ul class="hx-verify-list">
+    {items.map((item) => (
+      <li class="hx-verify-item">
+        <span class="hx-verify-mark" aria-hidden="true">✓</span>
+        <div>
+          <strong class="hx-verify-label">{item.label}</strong>
+          {item.command && <code class="hx-verify-cmd">{item.command}</code>}
+          {item.description && <p class="hx-verify-desc">{item.description}</p>}
+        </div>
+      </li>
+    ))}
+  </ul>
+</aside>
+
+<style>
+  .hx-verify {
+    margin-block: 1.5rem;
+    padding: 1rem 1.25rem 1.25rem;
+    background: var(--sl-color-bg-sidebar);
+    border: 1px solid var(--sl-color-gray-5);
+    border-left: 3px solid var(--sl-color-text-accent);
+    border-radius: 0 0.5rem 0.5rem 0;
+  }
+  .hx-verify-title {
+    margin: 0 0 0.75rem;
+    font-family: var(--__sl-font-mono);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--sl-color-text-accent);
+  }
+  .hx-verify-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+  }
+  .hx-verify-item {
+    display: grid;
+    grid-template-columns: 1.25rem 1fr;
+    gap: 0.5rem;
+    align-items: baseline;
+  }
+  .hx-verify-mark {
+    color: var(--sl-color-text-accent);
+    font-weight: bold;
+  }
+  .hx-verify-label {
+    margin-right: 0.5rem;
+  }
+  .hx-verify-cmd {
+    margin-left: 0;
+    padding: 0.0625rem 0.375rem;
+    font-size: 0.8rem;
+    background: var(--sl-color-bg-inline-code);
+    border-radius: 0.25rem;
+  }
+  .hx-verify-desc {
+    margin: 0.25rem 0 0;
+    color: var(--sl-color-gray-2);
+    font-size: 0.875rem;
+  }
+</style>

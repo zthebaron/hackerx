@@ -1,0 +1,25 @@
+---
+import Default from '@astrojs/starlight/components/Hero.astro';
+---
+
+<div class="hx-hero-wrapper">
+  <Default><slot /></Default>
+</div>
+
+<style>
+  .hx-hero-wrapper {
+    position: relative;
+  }
+  .hx-hero-wrapper :global(h1) {
+    font-family: var(--__sl-font-mono);
+    letter-spacing: -0.02em;
+    background: linear-gradient(135deg, var(--sl-color-white) 0%, var(--sl-color-text-accent) 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+  }
+  .hx-hero-wrapper :global(.tagline) {
+    max-width: 38ch;
+    line-height: 1.4;
+  }
+</style>

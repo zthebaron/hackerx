@@ -1,0 +1,182 @@
+---
+title: "The Master Prompt Anatomy"
+description: "Twelve steps. Five load-bearing lines. Why the master prompt changes how Claude Code answers everything."
+pubDate: 2026-04-12
+tags: ["claude-code", "prompts", "master-prompt", "ui-ux"]
+author: "Tim De Vallee"
+draft: false
+---
+
+The [master prompt](/02-master-prompts/master-prompt/) is twelve steps long. Most people see twelve and assume bloat. They keep the first three lines, paste it, and wonder why output got 30% better instead of 1000% better.
+
+You cannot trim it without breaking it. Five of those lines are load-bearing. Remove any one and the prompt collapses to mediocre.
+
+This article walks the prompt end to end and pulls out the five lines you cannot cut.
+
+## The full prompt, condensed
+
+```
+You are my senior product designer, UX strategist, front-end
+architect, and Claude Code implementation partner.
+
+I am designing an app/dashboard, but I may not know the correct
+UI/UX terms for the features I want.
+
+Your job:
+1. First, inspect the existing codebase, routes, components, styles,
+   data flows, and current layout patterns.
+2. Identify what kind of product this is.
+3. Create a UI/UX opportunity map.
+4. Give me at least 3 design directions: Safe / Modern SaaS / Power-user.
+5. For each direction, explain: what changes, why it helps,
+   components used, difficulty, risks.
+6. Use correct UI/UX vocabulary so I can learn.
+7. Recommend specific components from our current stack.
+   Prefer existing project patterns before adding new libraries.
+8. Do not code yet.
+9. Ask me only the most important questions.
+10. After I choose a direction, create an implementation plan.
+11. Then implement in small steps.
+12. After implementation, verify with: typecheck, lint, tests if
+    available, responsive review, accessibility review, screenshot
+    comparison if available.
+```
+
+That is the whole thing. Twelve numbered instructions, two preamble lines. Now the surgery.
+
+## Load-bearing line 1: the role stack
+
+> "You are my senior product designer, UX strategist, front-end architect, and Claude Code implementation partner."
+
+Roles change response style. "Code assistant" produces autocomplete. "Senior product designer" produces opinionated structure. Stack four roles and you force the model to operate at the intersection — design *and* engineering *and* strategy *and* implementation.
+
+Try the experiment. Take any UI request. Send it once with no role. Send it again with the four-role stack. The second response is structurally different — it leads with diagnosis, names patterns, proposes options, and ends with a plan. Same model, same prompt, completely different shape.
+
+Cut this line and you lose the entire opening posture.
+
+## Load-bearing line 2: permission to be vague
+
+> "I am designing an app/dashboard, but I may not know the correct UI/UX terms for the features I want."
+
+Without this, Claude assumes you are using terms precisely. With it, Claude knows to translate your gestures.
+
+You say "I want a thing on the side." Without permission to be vague, Claude builds a sidebar because "side" is the only signal. With permission, Claude responds: "you might mean a sidebar, a drawer, a split-pane, or a hover card — here is the difference, which fits your goal?"
+
+That single shift turns the session from a misfire into a translation. You do not need to know the right word. You need to know the right *direction*. Claude finds the word.
+
+This is the line most people remove because it feels too informal for a "senior" prompt. Removing it is the single biggest mistake in the prompt library.
+
+## Load-bearing line 3: inspect first
+
+> "First, inspect the existing codebase, routes, components, styles, data flows, and current layout patterns."
+
+Without this, Claude proposes a sidebar even though you already have one. It proposes a `KpiCard` even though `MetricCard` is sitting in `components/ui/`. It proposes installing recharts even though your repo already pulls from shadcn's chart component.
+
+With this line, Claude reads first, talks second. The opportunity map becomes accurate. The proposed components become real component paths. The implementation plan becomes a diff against what already exists, not a parallel system.
+
+This is the single line that separates a 100x session from a 10x session. Cut it and you spend the rest of the session telling Claude "we already have that."
+
+## Load-bearing line 4: three directions
+
+> "Give me at least 3 design directions: Safe and familiar / Modern SaaS / Premium power-user."
+
+Covered in depth in [The Three Options Rule](/blog/the-three-options-rule/). The short version: without forced differentiation, Claude proposes one option, you ship it, and you never know what you missed.
+
+The Safe / Modern / Power-user split is doing real work. Each label anchors a different point on the risk-ceiling curve. Reading three options across that curve is what reveals the right answer for your specific product, audience, and timeline.
+
+If you cut this line, every other line in the prompt still produces *fine* output. The output just happens to be the first thing Claude thought of. That is the failure mode of vibe coding.
+
+## Load-bearing line 5: do not code yet
+
+> "Do not code yet."
+
+Without this, Claude is helpful in the worst way. You ask for three options. Claude gives you three options *and starts implementing option 2*. Now you have unwanted code, a half-broken branch, and a session that already left design mode.
+
+"Do not code yet" enforces the gate. Three options, then a recommendation, then *you* pick, then implementation begins. The gate is the single point at which a human still has the steering wheel. Remove it and the steering wheel disappears.
+
+This line pairs with line 11: "Then implement in small steps." Together they form the spine — explore, propose, gate, plan, implement small, verify. Cut either one and the spine collapses.
+
+## The other seven lines
+
+The non-load-bearing lines are still doing useful work. They sharpen the output. But removing any one of them produces a less-polished session, not a broken session.
+
+Step 2 (classify the product) makes the pattern advice product-aware. A CRM gets saved views; an analytics app gets drill-downs; an AI assistant gets a tool-call timeline.
+
+Step 3 (opportunity map) prevents tunnel vision. Without it Claude proposes one navigation tweak and stops. With it, Claude has to find improvements across nine categories.
+
+Step 5 (per-direction structure) turns three names into three real proposals.
+
+Step 6 (use correct vocabulary) compounds across sessions. Every prompt teaches you 2-3 new pattern names. After 20 sessions you are speaking the language. See [Vocabulary Is The 100x](/blog/vocabulary-is-the-100x/).
+
+Step 7 (reuse before invent) is its own [full article](/blog/reuse-before-invent/). The single most common Claude failure is reinventing components you already have. This line stops it.
+
+Step 9 (one round of questions) caps back-and-forth. Without it Claude asks 12 clarifying questions. With it, 2-3.
+
+Step 12 (verification) is the difference between "compiled" and "shipped." Covered in [Verification Is Not Typecheck](/blog/verification-is-not-typecheck/).
+
+## The output format
+
+```
+A. Product diagnosis
+B. Current UI problems
+C. UI/UX opportunity map
+D. 3 design directions
+E. Component vocabulary cheat sheet
+F. Recommended first implementation plan
+G. Questions for me
+```
+
+Without a format, Claude writes a four-paragraph essay. With this format, you get scannable sections you can navigate by header. You can skip to D when you want options. You can skip to F when you have already picked.
+
+The format is the read-friendly UI of the prompt. It is not load-bearing — you would still get good output without it. But the user experience drops two notches because you have to hunt for the parts you care about.
+
+## What to customize without breaking it
+
+Add a product role.
+
+```
+You are also our compliance reviewer — flag any HIPAA risks
+in the data display.
+```
+
+Add stack constraints.
+
+```
+We use Next 14 app router, Tailwind v4, shadcn/ui, and React Server
+Components. Do not suggest alternatives.
+```
+
+Add audience.
+
+```
+Our users are field technicians on phones. Bias toward mobile-first
+and large touch targets.
+```
+
+These additions sharpen the prompt for your context. They do not break the structure.
+
+## What to never remove
+
+Five lines, in priority order:
+
+1. The role stack
+2. Permission to be vague
+3. Inspect first
+4. Three directions
+5. Do not code yet
+
+Plus the verification step at the bottom, which is non-negotiable for "shipped."
+
+Memorize those six. Everything else you can edit, reorder, or trim. Those six are the prompt.
+
+## Where to put the prompt
+
+Two places.
+
+In your repo's CLAUDE.md, as the default UI workflow. Now every session in that repo follows it without re-pasting.
+
+In your prompt library, as the prefix to every UI request. Even one-off scripts get the structure.
+
+The full block lives at [/02-master-prompts/master-prompt/](/02-master-prompts/master-prompt/). Copy it. Paste it. Tweak the customization lines for your stack. Then watch every UI session change shape.
+
+If you want the operating-system version that distills the master prompt to eight steps, read [The Eight-Step Operating System](/blog/the-eight-step-operating-system/) next. If you want to see the prompt run live on a real screen, the [demo walkthrough](/08-demonstrations/) shows the full loop.

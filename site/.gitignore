@@ -1,0 +1,51 @@
+# Build output
+dist/
+.astro/
+
+# Dependencies
+node_modules/
+
+# Logs
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment
+.env
+.env.production
+.env.local
+.env.*.local
+!.env.example
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+
+# Testing
+coverage/
+playwright-report/
+test-results/
+.lighthouseci/
+
+# Vercel
+.vercel/
+
+# Synced content (regenerated on build)
+src/content/docs/00-start-here/
+src/content/docs/01-foundations/
+src/content/docs/02-master-prompts/
+src/content/docs/03-ui-ux-vocabulary/
+src/content/docs/04-modern-ui-stack/
+src/content/docs/05-prompt-library/
+src/content/docs/06-add-ons/
+src/content/docs/07-skills/
+src/content/docs/08-demonstrations/
+src/content/docs/09-workshops/
+src/content/docs/10-philosophy/
+src/content/docs/11-final-operating-system/
+src/content/docs/templates/

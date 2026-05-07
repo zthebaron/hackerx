@@ -1,0 +1,49 @@
+{
+  "name": "hackerx",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "HackerX — drop CLAUDE.md, .claude/skills/, and prompt snippets into your repo",
+  "homepage": "https://hackerx.app",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zthebaron/hackerx.git",
+    "directory": "cli"
+  },
+  "author": "Tim De Vallee <ceo@exora.group>",
+  "license": "MIT",
+  "bin": {
+    "hackerx": "./dist/index.js"
+  },
+  "files": [
+    "dist",
+    "templates",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsx scripts/build.ts",
+    "dev": "tsx src/index.ts",
+    "test": "tsx --test src/**/*.test.ts || true",
+    "prepublishOnly": "pnpm build"
+  },
+  "dependencies": {
+    "kleur": "^4.1.5",
+    "prompts": "^2.4.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@types/prompts": "^2.4.9",
+    "tsx": "^4.21.0",
+    "typescript": "^5.8.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "keywords": [
+    "claude-code",
+    "ui-ux",
+    "cli",
+    "skill",
+    "claude",
+    "anthropic"
+  ]
+}

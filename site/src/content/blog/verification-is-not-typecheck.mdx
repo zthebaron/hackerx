@@ -1,0 +1,239 @@
+---
+title: "Verification Is Not Typecheck"
+description: "Done means typecheck plus lint plus responsive plus accessibility plus screenshots. Anything less is a prototype."
+pubDate: 2026-04-23
+tags: ["claude-code", "verification", "accessibility", "ui-ux"]
+author: "Tim De Vallee"
+draft: false
+---
+
+Most teams ship as soon as the typecheck passes. They believe "compiled" equals "done."
+
+It does not. Compiled is the floor, not the ceiling. Compiled means the TypeScript checker is happy. It tells you nothing about whether your screen works on a phone, whether keyboard users can reach every button, whether the loading state matches the final layout, or whether contrast is legible for half your users.
+
+Verification is what closes that gap. And verification is not optional — it is the eighth load-bearing line in the [master prompt](/blog/the-master-prompt-anatomy/) and step 7 of the [eight-step OS](/blog/the-eight-step-operating-system/).
+
+This article is the checklist Claude Code should run automatically after every UI commit.
+
+## The five layers of verification
+
+```
+1. Typecheck       — zero errors.
+2. Lint            — zero errors.
+3. Responsive      — 375, 768, 1280.
+4. Accessibility   — keyboard, focus, contrast, ARIA.
+5. State coverage  — loading, empty, error.
+```
+
+Each layer catches a class of bugs the layer below cannot. Skip a layer, ship the bugs that belong to it.
+
+### Layer 1: Typecheck
+
+```bash
+pnpm typecheck
+```
+
+Zero errors. This is the floor. Anything that fails the typecheck is broken in a way that requires a fix, not a debate.
+
+Most teams already do this. Many stop here. That is the mistake.
+
+### Layer 2: Lint
+
+```bash
+pnpm lint
+```
+
+Zero errors. Lint catches what TypeScript cannot — unused imports, missing keys, missing dependency arrays, ARIA attribute mismatches if you have a11y plugins on.
+
+Lint is also where Claude Code's lazy auto-fixes hide. Run lint after every commit, not at the end of the session.
+
+### Layer 3: Responsive review
+
+Three breakpoints. Always.
+
+```
+375  — small phone (iPhone SE class).
+768  — tablet portrait.
+1280 — desktop laptop class.
+```
+
+At each breakpoint, the screen has to be functional and visually correct. Not just "doesn't crash" — actually correct. KPIs stack instead of overflow. Tables scroll horizontally without trapping focus. Sidebars collapse to a hamburger or a bottom nav. Charts re-flow.
+
+The prompt for Claude Code:
+
+```
+After implementation, take screenshots at 375, 768, and 1280.
+For each breakpoint:
+- Confirm no horizontal scroll on the body.
+- Confirm primary content is visible above the fold.
+- Confirm interactive elements have at least 44px touch targets
+  on 375.
+- Note anything that overflows or stacks awkwardly.
+
+Report each breakpoint with a pass/fail and a screenshot path.
+```
+
+Most "responsive" UI is responsive in that it does not crash. That is not the bar. The bar is "would a user on this device choose this product over the alternative."
+
+### Layer 4: Accessibility
+
+Four sub-checks. None of them are optional.
+
+**Keyboard navigation.** Tab through every interactive element. Focus has to be visible at every step. Tab order has to be logical (top-to-bottom, left-to-right, modal traps focus inside, escape closes modal). Skip-to-main-content where applicable.
+
+**Visible focus.** Every focusable element has a visible focus ring. Default browser ring is fine if it is not removed. Custom rings have to meet contrast.
+
+**Color contrast.** Body text 4.5:1 against background. Large text 3:1. UI components and graphics 3:1. Labels on charts, trend deltas on KPI cards, and form helper text are the most common failures.
+
+**ARIA roles and names.** Dialogs have `role="dialog"` and a labelled name. Tabs have `role="tablist"` with `role="tab"` children. Accordions use `aria-expanded`. Custom buttons have `role="button"` and keyboard handlers.
+
+The prompt:
+
+```
+Run the accessibility checklist:
+
+1. Tab through every interactive element on the new screen.
+   Confirm focus is visible at every step. Confirm tab order
+   is logical. Report the focus path.
+
+2. Run color-contrast on body text, labels, trend deltas, and
+   helper text. Report any contrast under 4.5:1 (or 3:1 for
+   large text and UI graphics).
+
+3. Confirm ARIA roles on dialogs, tabs, accordions, popovers,
+   and custom interactive elements.
+
+4. Confirm modals trap focus and return focus on close.
+
+Report each check with a pass/fail.
+```
+
+Accessibility is not a separate concern. It is part of "shipped." Skip it and your product is unusable for the 15-20% of users who depend on assistive technology, plus the much larger group who use keyboard navigation as a power-user shortcut.
+
+### Layer 5: State coverage
+
+Every data-driven screen has at least four states.
+
+```
+1. Loading  — data is fetching.
+2. Empty    — no records exist yet.
+3. Error    — fetch failed.
+4. Success  — data rendered.
+```
+
+Most teams build state 4. They forget 1, 2, and 3. Then a real user hits an empty database and sees a blank gray rectangle, or a flaky network and sees a spinner that never resolves.
+
+The prompt:
+
+```
+For each data-bound area on the new screen, verify all four states:
+
+1. Loading: render skeleton that matches the final layout
+   (not a generic spinner).
+2. Empty: render an empty state with a next-best action
+   (e.g., "Create your first deal" CTA).
+3. Error: render a recoverable error message with a retry button.
+4. Success: render the actual data.
+
+Show me the components or pages that render each state.
+Flag any area missing one of the four.
+```
+
+A screen with all four states is shipped. A screen with only state 4 is a prototype.
+
+## The verification block to drop into CLAUDE.md
+
+```
+After every UI commit, run the verification loop and report
+each step with a pass/fail.
+
+1. pnpm typecheck — zero errors.
+2. pnpm lint — zero errors.
+3. Tests — run the suite if one exists.
+4. Responsive — screenshots at 375, 768, 1280.
+   Confirm no horizontal scroll, content above fold,
+   44px touch targets at 375.
+5. Accessibility:
+   a. Keyboard tab through every interactive element.
+      Focus visible. Tab order logical.
+   b. Color contrast on body text, labels, trend deltas,
+      helper text. Report any under 4.5:1 (or 3:1 large).
+   c. ARIA roles on dialogs, tabs, accordions, popovers.
+   d. Modals trap focus and return focus on close.
+6. State coverage — loading, empty, error, success.
+   For each data area, confirm all four states render.
+
+If any step fails, do not claim the commit is done.
+Report the failure and propose a fix.
+```
+
+That block in CLAUDE.md is the difference between "shipped" and "compiled." Drop it in once. Every UI session in the repo runs the loop automatically from then on.
+
+## Weak verification vs better verification
+
+A real example.
+
+**Weak verification:**
+
+```
+done. typecheck and lint pass. ready to merge.
+```
+
+What this misses: responsive at 375 is broken (KPIs overflow). Tab order skips the date picker. The error state is a console.log instead of a UI. The empty state is a blank gray rectangle.
+
+You merge. A user on an iPhone SE opens the dashboard. They see overflow. They close the tab. You never hear from them.
+
+**Better verification:**
+
+```
+Verification report for commit "Add dashboard KPIs":
+
+1. typecheck: pass (0 errors)
+2. lint: pass (0 errors, 1 unused import auto-fixed)
+3. tests: n/a (no test suite for dashboard yet)
+4. Responsive:
+   - 375: pass — KPIs stack 1-col, charts stack
+   - 768: pass — KPIs 2-col, charts stack
+   - 1280: pass — KPIs 4-col, charts 2-col
+   Screenshots in /tmp/dashboard-screenshots/
+5. Accessibility:
+   - Keyboard: pass (Tab → DateRange → RepFilter → KPI 1
+     → KPI 2 → KPI 3 → KPI 4 → table). Focus visible
+     at every step.
+   - Contrast: trend deltas use icon + text + color (not
+     color alone). 4.7:1 contrast on text.
+   - ARIA: Dialog on KPI drill-down has role and label.
+     Sheet for row detail traps focus and returns on close.
+6. State coverage:
+   - Loading: skeleton matches final layout (4 KPI cards,
+     2 chart placeholders, 1 table). Pass.
+   - Empty: "Create your first deal" CTA in table area
+     when 0 rows. Pass.
+   - Error: Recoverable error with retry. Pass.
+   - Success: Real data renders. Pass.
+
+One thing for human review: the AI-summary banner from
+direction 3 was not built. Infrastructure is ready for it.
+```
+
+That is shipped. Notice the structure — every layer is reported, every result is pass/fail, residual work is flagged for human review instead of snuck in.
+
+## When verification fails
+
+The point of the verification loop is to fail loudly. When a layer fails, the response is not "ship anyway." The response is one of:
+
+1. Fix it now and re-run.
+2. File an explicit follow-up and ship the rest.
+3. Roll the commit back and propose a smaller version.
+
+What you never do is paper over the failure. "Lint has a few warnings, should be fine" is how codebases drift. The point of the OS is to catch drift in the eight-step gate, not in production.
+
+## Why this matters more than typecheck
+
+Typecheck verifies the code compiles against types. Lint verifies the code follows your style and catches a class of bugs. Tests verify business logic. None of those tell you whether the screen *works* for the user on the device they actually have.
+
+Responsive verifies the geometry. Accessibility verifies the interaction. State coverage verifies the lifecycle.
+
+Together, they verify the product. Not the code — the product.
+
+That is the difference between vibe coding (compiled) and product-level AI development (shipped). See [From Vibe Coding to Product Quality](/blog/from-vibe-coding-to-product-quality/) for the full picture, [The Eight-Step Operating System](/blog/the-eight-step-operating-system/) for the OS that wraps verification into the larger flow, and [Claude Code as a Design Partner](/blog/claude-code-as-a-design-partner/) for the four-phase workflow that includes verification as the closing phase.

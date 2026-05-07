@@ -1,0 +1,99 @@
+---
+title: "Ship UI 100x faster with Claude Code"
+description: "Stop asking Claude to make it better. Name the pattern, get three options, ship the right one. The vocabulary, prompts, and skills that turn AI coding tools into product-quality work."
+template: splash
+hero:
+  tagline: "Stop asking Claude Code to make it better. Name the pattern, get three options, ship the right one."
+  image:
+    file: ../../assets/hero-illustration.svg
+    alt: "Three stylized UI design directions side by side."
+  actions:
+    - text: Start the course
+      link: /00-start-here/
+      icon: right-arrow
+      variant: primary
+    - text: Read the master prompt
+      link: /02-master-prompts/master-prompt/
+      variant: secondary
+    - text: GitHub
+      link: https://github.com/zthebaron/hackerx
+      icon: external
+      variant: minimal
+---
+
+import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
+
+## Why most teams get mediocre UI from AI tools
+
+You know a screen feels cluttered. You know users need "some kind of menu thing." You don't know whether to ask for a sidebar, command palette, accordion, drawer, tabs, popover, or split-pane.
+
+So you type "make it better." And Claude returns the first plausible thing. It looks like a prototype.
+
+HackerX gives you the language to ask for outcomes — and the verification loop to know you got them.
+
+## What you get
+
+<CardGrid>
+  <Card title="The master prompt" icon="rocket">
+    A 12-step prompt that turns Claude Code into a senior product designer, UX strategist, and front-end architect. Copy it. Paste it. Watch it explore your repo before talking.
+    [Read it →](/02-master-prompts/master-prompt/)
+  </Card>
+  <Card title="42 patterns named" icon="list-format">
+    A vocabulary cheat sheet across navigation, disclosure, dashboard, productivity, layout, and feedback. Each row is a sentence stem you can drop into a prompt.
+    [Open the cheat sheet →](/03-ui-ux-vocabulary/full-cheat-sheet/)
+  </Card>
+  <Card title="A skill that runs the loop" icon="puzzle">
+    The `ui-pattern-picker` skill activates on vague requests, returns three options with tradeoffs, and asks for approval before coding.
+    [Install in 10 seconds →](/07-skills/installing-skills/)
+  </Card>
+  <Card title="Verification you can trust" icon="approve-check">
+    Typecheck. Lint. Responsive at 375 / 768 / 1280. Keyboard nav. Focus visible. Screenshots. "Done" doesn't mean "compiled."
+    [The 8-step OS →](/11-final-operating-system/)
+  </Card>
+</CardGrid>
+
+## The 100x workflow
+
+```
+Explore  →  Diagnose  →  Generate options  →  Pick a direction
+   →  Plan  →  Implement small  →  Verify  →  Teach yourself the vocabulary
+```
+
+You don't ask Claude Code to make the dashboard better. You ask it to act like a product designer, UX strategist, front-end engineer, accessibility reviewer, and QA tester — all in one workflow.
+
+## Read it in this order
+
+<CardGrid>
+  <LinkCard title="00 — Start Here" href="/00-start-here/" description="Welcome, prerequisites, your first session." />
+  <LinkCard title="01 — Foundations" href="/01-foundations/" description="What vibe coding is. Why explore → plan → implement → verify wins." />
+  <LinkCard title="02 — Master Prompts" href="/02-master-prompts/" description="The 12-step master prompt and why each line is load-bearing." />
+  <LinkCard title="03 — UI/UX Vocabulary" href="/03-ui-ux-vocabulary/" description="42 patterns. Six categories. One filterable reference." />
+  <LinkCard title="04 — Modern UI Stack" href="/04-modern-ui-stack/" description="shadcn/ui, Radix, Tailwind v4, Storybook, Figma Make, AI Elements." />
+  <LinkCard title="05 — Prompt Library" href="/05-prompt-library/" description="Ten expert prompts you can paste tonight." />
+  <LinkCard title="08 — Demonstrations" href="/08-demonstrations/" description="Four full walkthroughs from vague idea → shipped UI." />
+  <LinkCard title="11 — Final OS" href="/11-final-operating-system/" description="The eight steps that tie it all together." />
+</CardGrid>
+
+## Install the skill in your repo
+
+```bash
+npx hackerx init
+```
+
+That drops `CLAUDE.md` and `.claude/skills/ui-pattern-picker/` into your project. Open Claude Code. The next ambiguous UI request gets three options instead of one mediocre one.
+
+## Who this is for
+
+- **Founders** designing apps without a designer on staff.
+- **Engineers** who want to ship UI that doesn't look like a prototype.
+- **Designers** who want to move 10x faster by directing Claude Code.
+- **PMs** who want to learn the actual language of UI/UX.
+- **Anyone** stuck saying "make it better" instead of naming the pattern.
+
+## The promise
+
+Stop asking Claude Code to "make it better." Know the name of every UI pattern you've been pointing at vaguely. Get three design directions for every screen instead of one mediocre one. Have a verification loop that runs every time. Reuse components instead of inventing new ones. Teach yourself the vocabulary as you ship.
+
+That's the difference between vibe coding and product-level AI development.
+
+[Start the course →](/00-start-here/)

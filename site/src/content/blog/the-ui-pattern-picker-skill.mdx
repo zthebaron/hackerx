@@ -1,0 +1,232 @@
+---
+title: "The UI Pattern Picker Skill"
+description: "Install one Claude Code skill and watch vague requests turn into three named pattern options without you doing anything."
+pubDate: 2026-04-26
+tags: ["claude-code", "skills", "ui-ux", "automation"]
+author: "Tim De Vallee"
+draft: false
+---
+
+You can paste the [master prompt](/02-master-prompts/master-prompt/) every session. You can drill yourself on the [42-pattern cheat sheet](/03-ui-ux-vocabulary/full-cheat-sheet/). You can train your team to write better prompts. All of that works.
+
+Or you can install one skill and have Claude Code do the translation for you on every vague request, in every repo, forever.
+
+The skill is `ui-pattern-picker`. It is the single highest-leverage thing you can install in your stack today.
+
+## What the skill does
+
+When you say something vague — "make this dashboard better," "this feels cluttered," "users can't find anything" — the skill activates. It does five things automatically:
+
+1. Diagnoses the actual user goal in one or two sentences.
+2. Maps the vague request to real UI/UX pattern options from the cheat sheet.
+3. Returns three options: safe, modern SaaS, power-user.
+4. Explains tradeoffs for each: what changes, why it helps, components used, difficulty, risks.
+5. Recommends one and asks for approval before coding.
+
+You did not write a better prompt. The skill wrote it for you.
+
+## Install it
+
+One line if you have the HackerX CLI:
+
+```bash
+cd ~/path/to/your/project
+npx hackerx init --skill ui-pattern-picker
+```
+
+Or copy the skill manually from the course repo:
+
+```bash
+cd ~/path/to/your/project
+mkdir -p .claude/skills/ui-pattern-picker
+cp ~/path/to/hackerx/07-skills/ui-pattern-picker/SKILL.md \
+   .claude/skills/ui-pattern-picker/SKILL.md
+```
+
+Then commit it so the rest of your team gets it on `git pull`:
+
+```bash
+git add .claude/skills/ui-pattern-picker/SKILL.md
+git commit -m "Add ui-pattern-picker Claude skill"
+```
+
+For a personal install that works in every repo, swap `.claude/` for `~/.claude/`. Full instructions live at [/07-skills/installing-skills/](/07-skills/installing-skills/).
+
+## The skill firing — a real transcript
+
+Here is what the next vague request looks like after the skill is installed.
+
+```
+> "this settings page feels cluttered"
+```
+
+Without the skill, Claude tries to clean things up however it sees fit. With the skill, this is the response.
+
+```
+## Diagnosis
+You have too many fields visible at once with no grouping.
+Users hit the page once a quarter, scan for the field they
+need, and bounce. Reducing visible surface and adding
+hierarchy is the goal.
+
+## Pattern options
+
+### Option 1 — Accordion sections (Safe)
+- What changes: group fields into Account, Notifications,
+  Billing, Advanced. Each section is an accordion. All
+  collapsed by default except Account.
+- Why it helps: same fields, less visible at once. Familiar
+  pattern, no learning curve.
+- Components used: components/ui/accordion.tsx (existing).
+- Difficulty: low (~1 hour).
+- Risks: users might miss collapsed sections; needs clear
+  section names.
+
+### Option 2 — Tabs + inline accordion (Modern SaaS)
+- What changes: top-level tabs for Account / Notifications /
+  Billing. Inside Billing, an Advanced accordion at the bottom.
+- Why it helps: heavy users hit Billing 80% of the time.
+  Tabs make the primary surface obvious. Advanced stays
+  hidden until needed.
+- Components used: components/ui/tabs.tsx, accordion.tsx
+  (both existing).
+- Difficulty: medium (~2 hours).
+- Risks: tabs add a layer of navigation; some users miss
+  the advanced section under Billing.
+
+### Option 3 — Drawer for advanced fields (Power-user)
+- What changes: keep the page flat for primary fields.
+  Move the advanced fields into a right-side drawer
+  triggered by a "More options" button.
+- Why it helps: primary surface is fastest possible.
+  Power users still get full control via the drawer.
+- Components used: components/ui/sheet.tsx (existing
+  drawer pattern).
+- Difficulty: medium (~2 hours).
+- Risks: discoverability of advanced settings drops.
+  Mitigated by a clear "Advanced settings" link.
+
+## Recommendation
+Option 2. Your support tickets show users hit Billing
+much more than Account or Notifications. Tabs make the
+high-traffic area the default surface. The Advanced
+accordion inside Billing protects rarely-used fields
+without burying them in a drawer.
+
+## Components to reuse
+- components/ui/tabs.tsx
+- components/ui/accordion.tsx
+- components/ui/card.tsx for section wrappers
+
+## One question for you
+Should "Account" or "Billing" be the default tab?
+That decision changes the cold-open experience.
+```
+
+Read that response. The skill did everything you would have done yourself if you had the [master prompt](/02-master-prompts/master-prompt/) memorized and 30 minutes to think. It diagnosed the goal. It mapped to three named patterns. It pointed at existing components. It recommended one with reasoning. It asked the one question that matters.
+
+You did not write a better prompt. You typed seven words. The skill did the lift.
+
+## What is in the SKILL.md file
+
+The skill is a single markdown file with five parts.
+
+```
+1. Frontmatter — name and description.
+2. When this skill activates — trigger phrases.
+3. What this skill does — the 6-step procedure.
+4. Common mappings — vague request -> likely patterns.
+5. Required output structure — the diagnosis / options /
+   recommendation / components / question shape.
+```
+
+The trigger phrases are the magic. Claude Code matches the user's request against the description, and when it sees patterns like "this feels cluttered," "make this better," "I don't know what component I need," the skill activates without you invoking it manually.
+
+Here is an excerpt from the trigger list:
+
+```yaml
+description: |
+  Helps choose the right UI/UX pattern when the user describes
+  a vague design need. Triggers on phrases like "make this easier
+  to navigate," "hide advanced settings," "make this dashboard
+  better," "add menus," "make this feel more professional," or
+  "I don't know what component I need."
+```
+
+The list is intentionally broad. You catch your team's natural language, not your team's edited language. The skill should fire on the prompt they actually wrote, not the prompt they would have written if they read this article first.
+
+## The mapping table
+
+The heart of the skill is the mapping table. A condensed version:
+
+```
+"too cluttered"       -> accordion, tabs, drawer, progressive disclosure
+"hard to move around" -> sidebar, breadcrumbs, command palette
+"too many actions"    -> dropdown menu, toolbar, context menu
+"hard to compare"     -> split-pane, master-detail, pinned columns
+"hard to filter"      -> faceted filters, saved views, date range
+"feels modern"        -> dashboard shell, card grid, type hierarchy
+"needs AI"            -> assistant drawer, prompt input, streaming
+"users get lost"      -> breadcrumbs, command palette, recently viewed
+"too dense"           -> progressive disclosure, accordion, density toggle
+"looks like a prototype" -> spacing audit, type hierarchy, contrast
+"feels slow"          -> skeleton loaders, optimistic updates
+"want power features" -> command palette, shortcuts, bulk actions
+```
+
+This is the [vocabulary cheat sheet](/03-ui-ux-vocabulary/full-cheat-sheet/) in skill form. The skill knows that "cluttered" is not a pattern — it is a symptom. The skill maps the symptom to the patterns that resolve it.
+
+## When the skill should not fire
+
+The skill is for vague design requests. It is not for everything.
+
+Skip the skill when:
+
+1. The user already named the pattern. "Add a confirmation dialog before delete" is specific. The skill should not return three options for it.
+2. The request is a bug fix or typo. No design space to explore.
+3. The user has already picked from a previous response. "Implement option 2" should go straight to planning, not back to options.
+
+The skill's `must NOT do` section enforces all three. Read the [SKILL.md](/07-skills/) source for the full guardrails.
+
+## Customizing the skill for your team
+
+The shipped skill is a starting point. Edit it.
+
+Add product-specific mappings. If your domain has its own vague requests, map them to your own named patterns:
+
+```
+"add reporting"    -> chart cards, date range, export, scheduled email
+"add admin tools"  -> impersonation, audit log, role manager
+"customer support" -> conversation timeline, canned responses, snooze
+```
+
+Reference your repo's component paths in the "Components to reuse" output:
+
+```
+- src/components/ui/Card.tsx
+- src/components/ui/Sheet.tsx
+- src/components/dashboard/KpiCard.tsx
+- src/components/data-table/DataTable.tsx
+```
+
+Bias the recommendation toward your audience. If your users are field technicians on phones, the skill should default toward mobile-first patterns. If your users are power users in a CRM all day, the skill should bias toward command palette, bulk actions, and saved views.
+
+The skill is markdown. Edit it fearlessly. Commit the edits. Your team gets the upgraded skill on the next pull.
+
+## What changes after install
+
+Three things change immediately.
+
+Your team's prompt quality stops mattering as much. The skill catches vague prompts and translates them. The new floor for prompt quality is "say what you want." The skill handles the rest.
+
+Your codebase stays coherent. The skill enforces "reuse existing components" in every response. Three sessions in a row of "fix the table" no longer produces three competing table components. See [Reuse Before Invent](/blog/reuse-before-invent/).
+
+Your team learns the vocabulary by exposure. Every skill response uses correct pattern names. After a month your standups start sounding different — people say "we need a faceted filter" instead of "we need to filter better." That shift is the [vocabulary compounding](/blog/vocabulary-is-the-100x/).
+
+## The half-second install pays back forever
+
+One `npx` command. One commit. Forever change.
+
+Read the [installation guide](/07-skills/installing-skills/) for the project-scoped vs personal install decision. Read [Stop Saying Make It Better](/blog/stop-saying-make-it-better/) for the broader pattern this skill is designed to fix. And read [The Eight-Step Operating System](/blog/the-eight-step-operating-system/) for the larger framework the skill plugs into — the skill enforces step 1 (name pattern options) and step 2 (explain tradeoffs). The other six steps still need the OS in CLAUDE.md.
+
+The skill is the lowest-effort, highest-leverage upgrade in HackerX. Install it now.

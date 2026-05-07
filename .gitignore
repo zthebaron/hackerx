@@ -1,0 +1,37 @@
+# Dependencies
+node_modules/
+
+# Build outputs (per-package gitignores cover details)
+dist/
+build/
+.astro/
+.vercel/
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+
+# Env
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Tests
+coverage/
+.lighthouseci/
+playwright-report/
+test-results/
+
+# Claude / agent artifacts
+.claude/cache/

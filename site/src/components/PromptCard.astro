@@ -1,0 +1,146 @@
+---
+interface Props {
+  /** Optional label shown above the code block, e.g. "Master Prompt" or "Better prompt" */
+  label?: string;
+  /** Optional badge variant: "weak" | "better" | "neutral" */
+  variant?: 'weak' | 'better' | 'neutral';
+  /** Display the line count badge (default true) */
+  showLineCount?: boolean;
+  /** The prompt text (alternative to using <slot />) */
+  prompt?: string;
+}
+
+const { label, variant = 'neutral', showLineCount = true, prompt } = Astro.props;
+
+// If using slot for the prompt content, line count is computed client-side.
+const lines = prompt ? prompt.trim().split(/\r?\n/).length : null;
+---
+
+<div class={`hx-prompt-card hx-prompt-${variant}`} data-prompt-card>
+  <header class="hx-prompt-header">
+    {label && <span class="hx-prompt-label">{label}</span>}
+    <div class="hx-prompt-actions">
+      {showLineCount && lines !== null && (
+        <span class="hx-prompt-lines">{lines} line{lines === 1 ? '' : 's'}</span>
+      )}
+      <button
+        class="hx-prompt-copy"
+        type="button"
+        aria-label="Copy prompt to clipboard"
+        data-copy-button
+      >
+        <span class="hx-copy-text">Copy</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+        </svg>
+      </button>
+    </div>
+  </header>
+  <div class="hx-prompt-body" data-prompt-body>
+    {prompt ? <pre><code>{prompt}</code></pre> : <slot />}
+  </div>
+</div>
+
+<style>
+  .hx-prompt-card {
+    margin-block: 1.5rem;
+    border: 1px solid var(--sl-color-gray-5);
+    border-radius: 0.5rem;
+    overflow: hidden;
+    background: var(--sl-color-bg);
+  }
+  .hx-prompt-better {
+    border-color: var(--sl-color-text-accent);
+    box-shadow: 0 0 0 1px var(--sl-color-text-accent);
+  }
+  .hx-prompt-weak {
+    border-color: var(--sl-color-gray-4);
+    opacity: 0.85;
+  }
+  .hx-prompt-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 0.75rem;
+    background: var(--sl-color-bg-sidebar);
+    border-bottom: 1px solid var(--sl-color-gray-5);
+    font-size: 0.8rem;
+  }
+  .hx-prompt-label {
+    font-family: var(--__sl-font-mono);
+    font-weight: 600;
+    color: var(--sl-color-text-accent);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .hx-prompt-better .hx-prompt-label::before {
+    content: '✓ ';
+  }
+  .hx-prompt-weak .hx-prompt-label::before {
+    content: '✗ ';
+    color: var(--sl-color-gray-3);
+  }
+  .hx-prompt-actions {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+  }
+  .hx-prompt-lines {
+    color: var(--sl-color-gray-3);
+    font-family: var(--__sl-font-mono);
+    font-size: 0.75rem;
+  }
+  .hx-prompt-copy {
+    display: inline-flex;
+    gap: 0.25rem;
+    align-items: center;
+    padding: 0.25rem 0.5rem;
+    background: transparent;
+    color: var(--sl-color-text);
+    border: 1px solid var(--sl-color-gray-5);
+    border-radius: 0.25rem;
+    font: inherit;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: background 120ms ease, border-color 120ms ease;
+  }
+  .hx-prompt-copy:hover {
+    background: var(--sl-color-bg-inline-code);
+    border-color: var(--sl-color-text-accent);
+  }
+  .hx-prompt-copy[data-copied] {
+    background: var(--sl-color-text-accent);
+    color: var(--sl-color-text-invert);
+    border-color: var(--sl-color-text-accent);
+  }
+  .hx-prompt-body :global(pre) {
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-prompt-card]').forEach((card) => {
+    const button = card.querySelector<HTMLButtonElement>('[data-copy-button]');
+    const body = card.querySelector<HTMLElement>('[data-prompt-body]');
+    if (!button || !body) return;
+    button.addEventListener('click', async () => {
+      const text = body.innerText.trim();
+      try {
+        await navigator.clipboard.writeText(text);
+        button.dataset.copied = 'true';
+        const txt = button.querySelector('.hx-copy-text');
+        const original = txt?.textContent ?? 'Copy';
+        if (txt) txt.textContent = 'Copied';
+        setTimeout(() => {
+          delete button.dataset.copied;
+          if (txt) txt.textContent = original;
+        }, 1500);
+      } catch (err) {
+        console.error('Copy failed', err);
+      }
+    });
+  });
+</script>

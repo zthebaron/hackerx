@@ -89,6 +89,11 @@ export default defineConfig({
           items: [{ autogenerate: { directory: '08-demonstrations' } }],
         },
         {
+          label: 'Samples',
+          link: '/samples/',
+          badge: { text: 'New', variant: 'success' },
+        },
+        {
           label: 'Workshops',
           items: [{ autogenerate: { directory: '09-workshops' } }],
         },

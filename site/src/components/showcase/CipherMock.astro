@@ -1,0 +1,225 @@
+---
+// Sample 2 — Cipher settings page. Maps to Demo 02 (progressive disclosure).
+// Palette: warm gray + indigo, the clean utility look.
+---
+
+<div class="cp-app">
+  <aside class="cp-side">
+    <div class="cp-brand">
+      <span class="cp-logo">⌬</span>
+      <span>Cipher</span>
+    </div>
+    <p class="cp-side-h">Workspace</p>
+    <a class="cp-side-item" href="#">Members</a>
+    <a class="cp-side-item" href="#">Billing</a>
+    <a class="cp-side-item active" href="#">Settings</a>
+    <a class="cp-side-item" href="#">Audit log</a>
+  </aside>
+
+  <main class="cp-main">
+    <header class="cp-head">
+      <h2>Settings</h2>
+      <p>Configure how your workspace behaves. Changes save automatically.</p>
+    </header>
+
+    <div class="cp-tabs" role="tablist">
+      <button class="cp-tab active" role="tab" aria-selected="true">Profile</button>
+      <button class="cp-tab" role="tab">Workspace</button>
+      <button class="cp-tab" role="tab">Notifications</button>
+      <button class="cp-tab" role="tab">Billing</button>
+      <button class="cp-tab" role="tab">API keys</button>
+      <button class="cp-tab" role="tab">Security</button>
+    </div>
+
+    <details class="cp-acc" open>
+      <summary>
+        <span class="cp-summary-text">
+          <strong>General</strong>
+          <span class="cp-help">Display name, language, timezone</span>
+        </span>
+        <span class="cp-chev" aria-hidden="true">▾</span>
+      </summary>
+      <div class="cp-acc-body">
+        <div class="cp-field">
+          <label>Display name</label>
+          <div class="cp-input-row">
+            <input type="text" value="Tim De Vallée" readonly/>
+            <span class="cp-saved">Saved</span>
+          </div>
+        </div>
+        <div class="cp-field">
+          <label>Email</label>
+          <div class="cp-input-row">
+            <input type="text" value="ceo@exora.group" readonly/>
+            <button class="cp-link">Verify</button>
+          </div>
+        </div>
+        <div class="cp-grid">
+          <div class="cp-field">
+            <label>Language</label>
+            <select disabled><option>English (US)</option></select>
+          </div>
+          <div class="cp-field">
+            <label>Timezone</label>
+            <select disabled><option>America / Los Angeles</option></select>
+          </div>
+        </div>
+      </div>
+    </details>
+
+    <details class="cp-acc">
+      <summary>
+        <span class="cp-summary-text">
+          <strong>Email preferences</strong>
+          <span class="cp-help">Daily digest, mention alerts, weekly summary</span>
+        </span>
+        <span class="cp-chev" aria-hidden="true">▸</span>
+      </summary>
+    </details>
+
+    <details class="cp-acc">
+      <summary>
+        <span class="cp-summary-text">
+          <strong>Connected accounts</strong>
+          <span class="cp-help">Google, GitHub, Slack, Vercel</span>
+        </span>
+        <span class="cp-chev" aria-hidden="true">▸</span>
+      </summary>
+    </details>
+
+    <details class="cp-acc cp-danger">
+      <summary>
+        <span class="cp-summary-text">
+          <strong>Advanced</strong>
+          <span class="cp-help">Rarely needed — proceed with care</span>
+        </span>
+        <span class="cp-chev" aria-hidden="true">▸</span>
+      </summary>
+    </details>
+
+    <div class="cp-toast" role="status">
+      <span class="cp-toast-mark">✓</span>
+      <span>Display name saved.</span>
+      <button class="cp-toast-undo">Undo</button>
+    </div>
+  </main>
+</div>
+
+<style>
+  .cp-app {
+    --cp-bg: #fafaf9;
+    --cp-card: #ffffff;
+    --cp-edge: #e7e5e4;
+    --cp-text: #1c1917;
+    --cp-muted: #78716c;
+    --cp-accent: #4f46e5;
+    --cp-accent-soft: #eef2ff;
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    background: var(--cp-bg);
+    color: var(--cp-text);
+    min-height: 600px;
+    font: 13.5px/1.5 var(--__sl-font-system, system-ui), sans-serif;
+    position: relative;
+  }
+  .cp-side {
+    background: var(--cp-card);
+    border-right: 1px solid var(--cp-edge);
+    padding: 1.25rem 1rem;
+  }
+  .cp-brand {
+    display: flex; align-items: center; gap: 0.5rem;
+    font-weight: 700; font-size: 15px; margin-bottom: 1.25rem;
+  }
+  .cp-logo {
+    width: 26px; height: 26px; display: inline-flex; align-items: center; justify-content: center;
+    background: var(--cp-accent); color: #fff; border-radius: 6px;
+    font-size: 14px;
+  }
+  .cp-side-h {
+    font-size: 10.5px; color: var(--cp-muted); text-transform: uppercase;
+    letter-spacing: 0.06em; margin: 0 0 0.4rem; padding: 0 0.4rem;
+  }
+  .cp-side-item {
+    display: block; padding: 0.4rem 0.5rem; border-radius: 5px;
+    color: var(--cp-text); text-decoration: none; font-size: 13px;
+  }
+  .cp-side-item.active { background: var(--cp-accent-soft); color: var(--cp-accent); font-weight: 600; }
+
+  .cp-main { padding: 1.25rem 1.5rem; overflow: auto; }
+  .cp-head h2 { margin: 0; font-size: 22px; font-weight: 700; }
+  .cp-head p { margin: 4px 0 1rem; color: var(--cp-muted); font-size: 13px; }
+
+  .cp-tabs {
+    display: flex; flex-wrap: wrap; gap: 1.25rem; margin-bottom: 1rem;
+    border-bottom: 1px solid var(--cp-edge);
+  }
+  .cp-tab {
+    background: transparent; border: 0; padding: 0.5rem 0;
+    color: var(--cp-muted); font: inherit; font-size: 13px; font-weight: 500;
+    cursor: pointer; border-bottom: 2px solid transparent;
+  }
+  .cp-tab.active { color: var(--cp-accent); border-bottom-color: var(--cp-accent); }
+
+  .cp-acc {
+    background: var(--cp-card);
+    border: 1px solid var(--cp-edge);
+    border-radius: 8px;
+    margin-bottom: 0.6rem;
+    overflow: hidden;
+  }
+  .cp-acc[open] { box-shadow: 0 1px 0 var(--cp-edge); }
+  .cp-acc summary {
+    list-style: none;
+    cursor: pointer;
+    padding: 0.85rem 1rem;
+    display: flex; justify-content: space-between; align-items: center; gap: 0.5rem;
+  }
+  .cp-acc summary::-webkit-details-marker { display: none; }
+  .cp-summary-text { display: flex; flex-direction: column; gap: 2px; }
+  .cp-help { color: var(--cp-muted); font-size: 12px; }
+  .cp-chev { color: var(--cp-muted); font-size: 14px; }
+  .cp-acc[open] .cp-chev { color: var(--cp-accent); }
+  .cp-acc-body {
+    padding: 0 1rem 1rem;
+    border-top: 1px solid var(--cp-edge);
+    padding-top: 0.85rem;
+    display: flex; flex-direction: column; gap: 0.85rem;
+  }
+  .cp-field { display: flex; flex-direction: column; gap: 0.3rem; }
+  .cp-field label { font-size: 12px; font-weight: 600; color: var(--cp-muted); }
+  .cp-field input, .cp-field select {
+    width: 100%;
+    padding: 0.45rem 0.625rem;
+    background: var(--cp-bg);
+    border: 1px solid var(--cp-edge); border-radius: 6px;
+    color: var(--cp-text); font: inherit; font-size: 13px;
+  }
+  .cp-input-row { display: flex; gap: 0.5rem; align-items: center; }
+  .cp-saved {
+    font-size: 11px; color: #16a34a; font-weight: 600;
+    background: #dcfce7; padding: 2px 8px; border-radius: 999px;
+  }
+  .cp-link { background: transparent; border: 0; color: var(--cp-accent); font: inherit; cursor: pointer; font-size: 12px; font-weight: 600; }
+  .cp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem; }
+
+  .cp-danger summary strong { color: #b45309; }
+
+  .cp-toast {
+    position: absolute;
+    bottom: 1rem; right: 1rem;
+    background: #1c1917; color: #fafaf9;
+    padding: 0.5rem 0.75rem;
+    border-radius: 8px; font-size: 12.5px;
+    display: inline-flex; gap: 0.5rem; align-items: center;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+  }
+  .cp-toast-mark { color: #4ade80; font-weight: 700; }
+  .cp-toast-undo { background: transparent; border: 0; color: #a8a29e; cursor: pointer; font: inherit; text-decoration: underline; }
+
+  @media (max-width: 760px) {
+    .cp-app { grid-template-columns: 1fr; }
+    .cp-side { display: none; }
+    .cp-grid { grid-template-columns: 1fr; }
+  }
+</style>

@@ -1,0 +1,206 @@
+---
+import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
+import BrowserFrame from '~/components/showcase/BrowserFrame.astro';
+import PhoneFrame from '~/components/showcase/PhoneFrame.astro';
+import SampleNotes from '~/components/showcase/SampleNotes.astro';
+import NorthstarMock from '~/components/showcase/NorthstarMock.astro';
+import CipherMock from '~/components/showcase/CipherMock.astro';
+import HaloMock from '~/components/showcase/HaloMock.astro';
+import RouteboxMock from '~/components/showcase/RouteboxMock.astro';
+---
+
+<StarlightPage
+  frontmatter={{
+    title: 'Samples',
+    description: 'Four sample apps designed using the HackerX workflow. Each one maps to a demo walkthrough — see the prompt, then see the output.',
+    template: 'doc',
+    tableOfContents: false,
+    pagefind: true,
+  }}
+>
+  <p class="hx-samples-intro">
+    Four sample apps built the HackerX way. Each one corresponds to a demonstration in the course — read the demo to see the prompt; scroll here to see what comes out the other side. Mockups are styled deliberately distinct from this site so the patterns lead, not the brand.
+  </p>
+
+  <p class="hx-samples-subtle">
+    These are visual mockups of UI surfaces. The pattern callouts below each one are the named patterns you'd ask Claude Code to build, not freestyle CSS.
+  </p>
+
+  <section class="hx-sample" id="northstar">
+    <header class="hx-sample-head">
+      <p class="hx-sample-eyebrow">Sample 01 · B2B SaaS dashboard</p>
+      <h2>Northstar — sales overview</h2>
+      <p class="hx-sample-blurb">
+        A four-person sales team needs a dashboard fast. Master prompt produces three directions. Modern SaaS wins: dashboard shell, four KPIs with trend deltas, two chart cards, sortable table with status badges, activity rail. Existing <code>Card</code>, <code>Sheet</code>, and <code>DataTable</code> reused; only <code>KpiCard</code> and a sparkline are new.
+      </p>
+    </header>
+    <BrowserFrame url="northstar.app/dashboard" title="Northstar — Dashboard">
+      <NorthstarMock />
+    </BrowserFrame>
+    <SampleNotes
+      patterns={['Sidebar nav','Top bar','KPI cards','Chart card','Pipeline by stage','Faceted filter','Date range','Data table','Status badge','Activity feed']}
+      stack={['Next.js 15','Tailwind v4','shadcn/ui','recharts','Supabase']}
+      demoHref="/08-demonstrations/demo-01-dashboard-from-scratch/"
+      demoLabel="Read Demo 01 walkthrough"
+    />
+  </section>
+
+  <section class="hx-sample" id="cipher">
+    <header class="hx-sample-head">
+      <p class="hx-sample-eyebrow">Sample 02 · Settings page redesign</p>
+      <h2>Cipher — workspace settings</h2>
+      <p class="hx-sample-blurb">
+        47 settings fields, all visible at once. Master prompt names the right pattern: progressive disclosure. Tabs split major areas; accordions group related fields inside each tab. "Advanced" stays collapsed by default. Inline validation, save toast with undo. Nothing is hidden — but nothing screams either.
+      </p>
+    </header>
+    <BrowserFrame url="cipher.io/settings/profile" title="Cipher — Settings">
+      <CipherMock />
+    </BrowserFrame>
+    <SampleNotes
+      patterns={['Tabs','Accordion','Inline edit','Validation message','Toast','Undo action','Saved-state badge','Sidebar nav']}
+      stack={['Remix','Tailwind v4','Radix UI','React Hook Form','Zod']}
+      demoHref="/08-demonstrations/demo-02-redesign-existing/"
+      demoLabel="Read Demo 02 walkthrough"
+    />
+  </section>
+
+  <section class="hx-sample" id="halo">
+    <header class="hx-sample-head">
+      <p class="hx-sample-eyebrow">Sample 03 · AI assistant integration</p>
+      <h2>Halo — analytics drawer</h2>
+      <p class="hx-sample-blurb">
+        The wrong question: "should we add a chatbot?" The right question: where does an assistant earn its space? Halo lives as a context-aware right-side drawer, sees what the user is looking at, and proposes follow-ups. Streaming responses, tool-call timeline, suggested queries. No floating mascot. No interruption.
+      </p>
+    </header>
+    <BrowserFrame url="halo.so/analytics/pipeline" title="Halo — Pipeline analytics">
+      <HaloMock />
+    </BrowserFrame>
+    <SampleNotes
+      patterns={['Drawer / sheet','Streaming response','Tool-call timeline','Suggested actions','Context badges','Empty + loading states']}
+      stack={['Next.js 15','Vercel AI SDK','AI Elements','Tailwind v4','shadcn/ui']}
+      demoHref="/08-demonstrations/demo-03-add-ai-assistant/"
+      demoLabel="Read Demo 03 walkthrough"
+    />
+  </section>
+
+  <section class="hx-sample" id="routebox">
+    <header class="hx-sample-head">
+      <p class="hx-sample-eyebrow">Sample 04 · Mobile-first rebuild</p>
+      <h2>Routebox — field technician app</h2>
+      <p class="hx-sample-blurb">
+        "Make it responsive" produces a desktop dashboard squeezed onto a phone. Wrong. Field techs see one job at a time, glance-readable, big tap targets, status-first. Bottom nav for the four core moves. The dispatcher's desktop view is its own product, not this one's responsive ancestor.
+      </p>
+    </header>
+    <PhoneFrame>
+      <RouteboxMock />
+    </PhoneFrame>
+    <SampleNotes
+      patterns={['Bottom nav','Card list','Status badge','Day strip','Counters','Card hierarchy','Touch targets ≥44px']}
+      stack={['Expo / React Native','NativeWind','Tamagui','Tailwind tokens']}
+      demoHref="/08-demonstrations/demo-04-mobile-first-rebuild/"
+      demoLabel="Read Demo 04 walkthrough"
+    />
+  </section>
+
+  <hr/>
+
+  <section class="hx-samples-cta">
+    <h2>Build your own</h2>
+    <p>
+      Each sample above came from the same loop: paste the master prompt, get three directions, pick one, plan, implement small, verify. The mockups are visual — the prompts are real.
+    </p>
+    <p>
+      <a href="/02-master-prompts/master-prompt/" class="hx-samples-btn">Read the master prompt →</a>
+      <a href="/07-skills/installing-skills/" class="hx-samples-btn hx-samples-btn-ghost">Install the skill</a>
+    </p>
+  </section>
+</StarlightPage>
+
+<style>
+  .hx-samples-intro {
+    font-size: 1.05rem;
+    color: var(--sl-color-gray-2);
+    max-width: 60ch;
+    margin-top: 0;
+  }
+  .hx-samples-subtle {
+    font-size: 0.875rem;
+    color: var(--sl-color-gray-3);
+    max-width: 60ch;
+    border-left: 2px solid var(--sl-color-gray-5);
+    padding-left: 0.85rem;
+    margin-bottom: 2.5rem;
+  }
+  .hx-sample {
+    margin-block: 3rem;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+  .hx-sample-head { max-width: 65ch; }
+  .hx-sample-eyebrow {
+    margin: 0 0 0.4rem;
+    font-family: var(--__sl-font-mono);
+    font-size: 0.75rem;
+    color: var(--sl-color-text-accent);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .hx-sample-head h2 {
+    margin: 0 0 0.5rem;
+    font-size: 1.65rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+  .hx-sample-blurb {
+    margin: 0;
+    color: var(--sl-color-gray-2);
+    line-height: 1.55;
+  }
+  .hx-sample-blurb code {
+    font-size: 0.85em;
+    padding: 0.05rem 0.35rem;
+    background: var(--sl-color-bg-inline-code);
+    color: var(--sl-color-text-accent);
+    border-radius: 0.25rem;
+  }
+
+  /* Phone sample needs a darker pad area to stage the device */
+  #routebox {
+    background: linear-gradient(180deg, transparent, rgba(16, 185, 129, 0.04));
+    border-radius: 1rem;
+    padding: 1.5rem 0.5rem 2rem;
+  }
+
+  .hx-samples-cta {
+    margin-top: 3rem;
+    padding: 2rem;
+    background: var(--sl-color-bg-sidebar);
+    border: 1px solid var(--sl-color-text-accent);
+    border-radius: 0.75rem;
+    text-align: center;
+  }
+  .hx-samples-cta h2 { margin: 0 0 0.5rem; font-size: 1.4rem; }
+  .hx-samples-cta p { margin: 0 auto 1rem; max-width: 50ch; color: var(--sl-color-gray-2); }
+  .hx-samples-btn {
+    display: inline-block;
+    padding: 0.55rem 1rem;
+    background: var(--sl-color-text-accent);
+    color: var(--sl-color-text-invert);
+    border-radius: 0.375rem;
+    font-weight: 600;
+    text-decoration: none;
+    margin: 0 0.25rem;
+  }
+  .hx-samples-btn-ghost {
+    background: transparent;
+    color: var(--sl-color-text-accent);
+    border: 1px solid var(--sl-color-text-accent);
+  }
+
+  @media (min-width: 1024px) {
+    .hx-sample {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>

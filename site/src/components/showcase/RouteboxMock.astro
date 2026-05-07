@@ -1,0 +1,201 @@
+---
+// Sample 4 — Routebox mobile dispatcher app. Maps to Demo 04 (mobile-first rebuild).
+// Palette: amber + dark slate, the field/logistics product look.
+---
+
+<div class="rb-screen">
+  <header class="rb-head">
+    <h1>Today's jobs</h1>
+    <p>Tuesday, May 7</p>
+  </header>
+
+  <div class="rb-day-strip">
+    <button class="rb-day"><span>Mon</span><span>6</span></button>
+    <button class="rb-day rb-day-on"><span>Tue</span><span>7</span></button>
+    <button class="rb-day"><span>Wed</span><span>8</span></button>
+    <button class="rb-day"><span>Thu</span><span>9</span></button>
+    <button class="rb-day"><span>Fri</span><span>10</span></button>
+  </div>
+
+  <div class="rb-counters">
+    <div class="rb-counter rb-c-doing"><span class="rb-c-n">1</span><span>In progress</span></div>
+    <div class="rb-counter"><span class="rb-c-n">3</span><span>Pending</span></div>
+    <div class="rb-counter rb-c-done"><span class="rb-c-n">2</span><span>Completed</span></div>
+  </div>
+
+  <div class="rb-list">
+    <article class="rb-job rb-doing">
+      <header>
+        <span class="rb-tag">In progress</span>
+        <span class="rb-time">9:30 AM</span>
+      </header>
+      <h2>#4821 — HVAC tune-up</h2>
+      <p class="rb-addr">123 Main St, Apt 4B · Brooklyn</p>
+      <footer>
+        <span class="rb-est">~45 min left</span>
+        <button class="rb-cta">Open</button>
+      </footer>
+    </article>
+
+    <article class="rb-job">
+      <header>
+        <span class="rb-tag rb-tag-pending">Pending</span>
+        <span class="rb-time">11:00 AM</span>
+      </header>
+      <h2>#4822 — Boiler check</h2>
+      <p class="rb-addr">456 Oak Ave · Queens</p>
+      <footer>
+        <span class="rb-est">12 mi · 22 min drive</span>
+        <button class="rb-cta-secondary">Start</button>
+      </footer>
+    </article>
+
+    <article class="rb-job">
+      <header>
+        <span class="rb-tag rb-tag-pending">Pending</span>
+        <span class="rb-time">2:30 PM</span>
+      </header>
+      <h2>#4823 — Filter swap</h2>
+      <p class="rb-addr">88 Park Pl · Brooklyn</p>
+      <footer>
+        <span class="rb-est">3 mi · 9 min drive</span>
+        <button class="rb-cta-secondary">Start</button>
+      </footer>
+    </article>
+
+    <article class="rb-job rb-done">
+      <header>
+        <span class="rb-tag rb-tag-done">Completed</span>
+        <span class="rb-time">8:00 AM</span>
+      </header>
+      <h2>#4820 — Quarterly inspection</h2>
+      <p class="rb-addr">7 Vine St · Brooklyn</p>
+      <footer>
+        <span class="rb-est">Signed by Dana K.</span>
+      </footer>
+    </article>
+  </div>
+
+  <nav class="rb-nav" aria-label="Primary">
+    <a class="rb-nav-item rb-nav-on" href="#">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+      <span>Jobs</span>
+    </a>
+    <a class="rb-nav-item" href="#">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>
+      <span>Map</span>
+    </a>
+    <a class="rb-nav-item" href="#">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      <span>Updates</span>
+    </a>
+    <a class="rb-nav-item" href="#">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span>Profile</span>
+    </a>
+  </nav>
+</div>
+
+<style>
+  .rb-screen {
+    --rb-bg: #fafafa;
+    --rb-card: #ffffff;
+    --rb-edge: #e5e5e5;
+    --rb-text: #18181b;
+    --rb-muted: #71717a;
+    --rb-amber: #f59e0b;
+    --rb-amber-soft: #fef3c7;
+    --rb-slate: #1c1917;
+    --rb-green: #16a34a;
+    --rb-green-soft: #dcfce7;
+    height: 100%;
+    background: var(--rb-bg);
+    color: var(--rb-text);
+    font: 13px/1.4 var(--__sl-font-system, system-ui), sans-serif;
+    display: flex; flex-direction: column;
+  }
+  .rb-head { padding: 0.5rem 1.1rem 0.6rem; }
+  .rb-head h1 { margin: 0; font-size: 22px; font-weight: 800; letter-spacing: -0.02em; }
+  .rb-head p { margin: 2px 0 0; color: var(--rb-muted); font-size: 12.5px; }
+
+  .rb-day-strip {
+    display: flex; gap: 0.4rem; padding: 0 1.1rem; overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .rb-day-strip::-webkit-scrollbar { display: none; }
+  .rb-day {
+    flex-shrink: 0;
+    width: 44px; padding: 0.5rem 0;
+    background: var(--rb-card); border: 1px solid var(--rb-edge); border-radius: 10px;
+    color: var(--rb-text); font: inherit; cursor: pointer;
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+  }
+  .rb-day span:first-child { font-size: 9.5px; color: var(--rb-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+  .rb-day span:last-child { font-size: 16px; font-weight: 700; }
+  .rb-day-on { background: var(--rb-slate); border-color: var(--rb-slate); color: #fff; }
+  .rb-day-on span:first-child { color: var(--rb-amber); }
+
+  .rb-counters {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.4rem;
+    padding: 0.75rem 1.1rem 0.6rem;
+  }
+  .rb-counter {
+    padding: 0.45rem 0.5rem;
+    background: var(--rb-card); border: 1px solid var(--rb-edge); border-radius: 10px;
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+    font-size: 10.5px; color: var(--rb-muted);
+  }
+  .rb-c-n { font-size: 17px; font-weight: 800; color: var(--rb-text); }
+  .rb-c-doing { background: var(--rb-amber-soft); border-color: var(--rb-amber); }
+  .rb-c-doing .rb-c-n { color: var(--rb-amber); }
+  .rb-c-done { background: var(--rb-green-soft); border-color: var(--rb-green); }
+  .rb-c-done .rb-c-n { color: var(--rb-green); }
+
+  .rb-list {
+    flex: 1; overflow-y: auto;
+    padding: 0.4rem 1.1rem 0.6rem;
+    display: flex; flex-direction: column; gap: 0.55rem;
+  }
+  .rb-job {
+    background: var(--rb-card); border: 1px solid var(--rb-edge); border-radius: 12px;
+    padding: 0.65rem 0.8rem; display: flex; flex-direction: column; gap: 0.3rem;
+    box-shadow: 0 1px 0 rgba(0,0,0,0.02);
+  }
+  .rb-job header { display: flex; justify-content: space-between; align-items: center; }
+  .rb-job h2 { margin: 0; font-size: 14.5px; font-weight: 700; }
+  .rb-addr { margin: 0; color: var(--rb-muted); font-size: 11.5px; }
+  .rb-job footer { display: flex; justify-content: space-between; align-items: center; margin-top: 0.2rem; }
+  .rb-est { color: var(--rb-muted); font-size: 11px; }
+
+  .rb-tag {
+    padding: 2px 8px; border-radius: 999px; font-size: 10px; font-weight: 700;
+    background: var(--rb-amber); color: #fff; text-transform: uppercase; letter-spacing: 0.04em;
+  }
+  .rb-tag-pending { background: var(--rb-edge); color: var(--rb-muted); }
+  .rb-tag-done { background: var(--rb-green); color: #fff; }
+  .rb-time { font-size: 11px; color: var(--rb-muted); font-variant-numeric: tabular-nums; }
+
+  .rb-doing { border-color: var(--rb-amber); box-shadow: 0 0 0 2px var(--rb-amber-soft); }
+  .rb-done { opacity: 0.7; }
+
+  .rb-cta {
+    padding: 0.4rem 0.8rem; background: var(--rb-slate); color: var(--rb-amber);
+    border: 0; border-radius: 8px; font: inherit; font-size: 12px; font-weight: 700; cursor: pointer;
+  }
+  .rb-cta-secondary {
+    padding: 0.4rem 0.8rem; background: transparent; color: var(--rb-text);
+    border: 1px solid var(--rb-edge); border-radius: 8px; font: inherit; font-size: 12px; font-weight: 600; cursor: pointer;
+  }
+
+  .rb-nav {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    background: var(--rb-card); border-top: 1px solid var(--rb-edge);
+    padding: 0.4rem 0.5rem 0.5rem;
+  }
+  .rb-nav-item {
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+    padding: 0.3rem 0.2rem; color: var(--rb-muted); text-decoration: none;
+    font-size: 10.5px; font-weight: 600;
+  }
+  .rb-nav-on { color: var(--rb-slate); }
+</style>

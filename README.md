@@ -104,4 +104,14 @@ That's the difference between **vibe coding** and **product-level AI development
 
 ---
 
+## License
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-10b981.svg)](LICENSE)
+
+HackerX is released under the [MIT License](LICENSE) — copy it, fork it, ship it. Attribution is appreciated but not required.
+
+Copyright © 2026 Tim de Vallée at [DigitalBoutique.ai (DBAI)](https://digitalboutique.ai).
+
+---
+
 Built by [DBAI](https://digitalboutique.ai) · Architect [Tim De Vallee](https://digitalboutique.ai). Last updated 2026-05-07.

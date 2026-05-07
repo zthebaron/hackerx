@@ -1,0 +1,255 @@
+---
+// Sample 3 — Halo AI assistant drawer. Maps to Demo 03.
+// Palette: violet + rose, the AI product look.
+---
+
+<div class="hl-app">
+  <main class="hl-main">
+    <div class="hl-toolbar">
+      <h2>Pipeline analytics</h2>
+      <div class="hl-tools">
+        <span class="hl-chip">Last 90 days</span>
+        <span class="hl-chip hl-chip-on">⌥ Halo · open</span>
+      </div>
+    </div>
+
+    <div class="hl-stat-row">
+      <div class="hl-stat"><span class="hl-stat-l">Conversion</span><span class="hl-stat-v">28.4%</span></div>
+      <div class="hl-stat"><span class="hl-stat-l">Cycle time</span><span class="hl-stat-v">42d</span></div>
+      <div class="hl-stat"><span class="hl-stat-l">Avg. deal</span><span class="hl-stat-v">$38.2K</span></div>
+      <div class="hl-stat"><span class="hl-stat-l">Forecast</span><span class="hl-stat-v">$1.4M</span></div>
+    </div>
+
+    <div class="hl-chart-card">
+      <div class="hl-chart-head">
+        <h3>Conversion by stage</h3>
+        <span class="hl-card-meta">Open + closed in window</span>
+      </div>
+      <svg class="hl-chart" viewBox="0 0 400 140" preserveAspectRatio="none" aria-hidden="true">
+        <defs>
+          <linearGradient id="hl-g1" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#a855f7" stop-opacity="0.45"/>
+            <stop offset="100%" stop-color="#a855f7" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+        <path d="M0,110 L40,90 L80,98 L120,72 L160,82 L200,52 L240,62 L280,38 L320,46 L360,28 L400,20 L400,140 L0,140 Z" fill="url(#hl-g1)"/>
+        <path d="M0,110 L40,90 L80,98 L120,72 L160,82 L200,52 L240,62 L280,38 L320,46 L360,28 L400,20" fill="none" stroke="#a855f7" stroke-width="2.5"/>
+        <circle cx="200" cy="52" r="4" fill="#fff" stroke="#a855f7" stroke-width="2"/>
+        <circle cx="280" cy="38" r="4" fill="#fff" stroke="#a855f7" stroke-width="2"/>
+      </svg>
+    </div>
+
+    <div class="hl-row">
+      <div class="hl-table-card">
+        <h3>Reps by win rate</h3>
+        <ul class="hl-list">
+          <li><span class="hl-rank">1</span><span>Sara Martinez</span><span class="hl-pct">42%</span></li>
+          <li><span class="hl-rank">2</span><span>Jake Robinson</span><span class="hl-pct">36%</span></li>
+          <li><span class="hl-rank">3</span><span>Maria Lopez</span><span class="hl-pct">31%</span></li>
+          <li><span class="hl-rank">4</span><span>Devon Klein</span><span class="hl-pct">24%</span></li>
+        </ul>
+      </div>
+      <div class="hl-table-card">
+        <h3>Stuck deals</h3>
+        <ul class="hl-list">
+          <li><span class="hl-warn">!</span><span>Cipher Co · 18d</span><span class="hl-pct">$87K</span></li>
+          <li><span class="hl-warn">!</span><span>Delta Labs · 14d</span><span class="hl-pct">$31K</span></li>
+          <li><span class="hl-warn">!</span><span>Helix Health · 12d</span><span class="hl-pct">$54K</span></li>
+        </ul>
+      </div>
+    </div>
+  </main>
+
+  <aside class="hl-drawer" aria-label="Halo assistant">
+    <header class="hl-drawer-head">
+      <div class="hl-drawer-title">
+        <span class="hl-orb" aria-hidden="true"></span>
+        <strong>Halo</strong>
+        <span class="hl-drawer-meta">Analytics assistant</span>
+      </div>
+      <button class="hl-icon-btn" aria-label="Close drawer">×</button>
+    </header>
+
+    <div class="hl-thread">
+      <div class="hl-msg user">What's our win rate this quarter and who's driving it?</div>
+
+      <div class="hl-msg bot">
+        <p>Win rate is <strong>32%</strong>, up from 28% last quarter.</p>
+        <p>Top three reps by closed-won value:</p>
+        <ul>
+          <li>Sara Martinez — $342K · 42% rate</li>
+          <li>Jake Robinson — $284K · 36% rate</li>
+          <li>Maria Lopez — $231K · 31% rate</li>
+        </ul>
+        <div class="hl-tool">
+          <span class="hl-tool-mark">▣</span>
+          <span>Pulled 247 deals from <code>pipeline.deals</code></span>
+        </div>
+      </div>
+
+      <div class="hl-actions">
+        <button class="hl-pill">Show me Sara's deals</button>
+        <button class="hl-pill">Compare to last year</button>
+        <button class="hl-pill">Why is Devon below 25%?</button>
+      </div>
+
+      <div class="hl-msg user">Why is Devon below 25%?</div>
+      <div class="hl-msg bot streaming">
+        <p>Looking at Devon's deals over the last 60 days<span class="hl-cur"></span></p>
+        <div class="hl-tool">
+          <span class="hl-tool-mark hl-spin">◐</span>
+          <span>Running <code>analyze.rep_pipeline(rep="devon")</code></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="hl-input">
+      <div class="hl-input-box">
+        <span>Ask anything about the pipeline…</span>
+        <span class="hl-cmd">⏎</span>
+      </div>
+      <div class="hl-foot">
+        <span>Halo · v0.4 · context: 90d window</span>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<style>
+  .hl-app {
+    --hl-bg: #0c0a1a;
+    --hl-panel: #15122a;
+    --hl-card: rgba(255, 255, 255, 0.04);
+    --hl-edge: rgba(168, 85, 247, 0.2);
+    --hl-edge2: rgba(255, 255, 255, 0.08);
+    --hl-text: #ede9fe;
+    --hl-muted: #a78bfa;
+    --hl-accent: #a855f7;
+    --hl-rose: #f472b6;
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    background: radial-gradient(ellipse at top right, #2e1065 0%, var(--hl-bg) 60%);
+    color: var(--hl-text);
+    min-height: 600px;
+    font: 13px/1.5 var(--__sl-font-system, system-ui), sans-serif;
+  }
+  .hl-main { padding: 1rem 1.25rem; display: flex; flex-direction: column; gap: 0.85rem; min-width: 0; }
+  .hl-toolbar { display: flex; justify-content: space-between; align-items: center; }
+  .hl-toolbar h2 { margin: 0; font-size: 18px; font-weight: 700; letter-spacing: -0.01em; }
+  .hl-tools { display: flex; gap: 0.4rem; }
+  .hl-chip {
+    padding: 0.3rem 0.6rem; background: rgba(255,255,255,0.04);
+    border: 1px solid var(--hl-edge2); border-radius: 999px; font-size: 11.5px;
+  }
+  .hl-chip-on { background: linear-gradient(90deg, rgba(168,85,247,0.25), rgba(244,114,182,0.2)); border-color: var(--hl-edge); }
+  .hl-stat-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.6rem; }
+  .hl-stat {
+    padding: 0.7rem 0.85rem; background: var(--hl-card); border: 1px solid var(--hl-edge2);
+    border-radius: 10px; display: flex; flex-direction: column; gap: 3px;
+  }
+  .hl-stat-l { font-size: 10.5px; color: var(--hl-muted); text-transform: uppercase; letter-spacing: 0.06em; }
+  .hl-stat-v { font-size: 19px; font-weight: 700; }
+
+  .hl-chart-card, .hl-table-card {
+    padding: 0.85rem; background: var(--hl-card); border: 1px solid var(--hl-edge2);
+    border-radius: 10px;
+  }
+  .hl-chart-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.5rem; }
+  .hl-chart-head h3 { margin: 0; font-size: 13px; font-weight: 700; }
+  .hl-card-meta { font-size: 11px; color: var(--hl-muted); }
+  .hl-chart { width: 100%; height: 110px; }
+
+  .hl-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+  .hl-table-card h3 { margin: 0 0 0.5rem; font-size: 13px; font-weight: 700; }
+  .hl-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.4rem; }
+  .hl-list li {
+    display: grid; grid-template-columns: 18px 1fr auto; align-items: center; gap: 0.5rem;
+    padding: 0.4rem 0.5rem; background: rgba(0,0,0,0.2); border-radius: 6px; font-size: 12px;
+  }
+  .hl-rank {
+    width: 18px; height: 18px; display: inline-flex; align-items: center; justify-content: center;
+    background: var(--hl-accent); color: #fff; border-radius: 50%; font-size: 10.5px; font-weight: 700;
+  }
+  .hl-warn { color: var(--hl-rose); font-weight: 700; text-align: center; }
+  .hl-pct { color: var(--hl-text); font-weight: 600; }
+
+  .hl-drawer {
+    background: var(--hl-panel); border-left: 1px solid var(--hl-edge);
+    display: flex; flex-direction: column; min-width: 0;
+  }
+  .hl-drawer-head {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 0.7rem 0.85rem; border-bottom: 1px solid var(--hl-edge2);
+  }
+  .hl-drawer-title { display: flex; align-items: center; gap: 0.5rem; }
+  .hl-orb {
+    width: 14px; height: 14px; border-radius: 50%;
+    background: conic-gradient(from 0deg, var(--hl-accent), var(--hl-rose), var(--hl-accent));
+    box-shadow: 0 0 12px rgba(168, 85, 247, 0.6);
+    animation: hl-spin-orb 6s linear infinite;
+  }
+  @keyframes hl-spin-orb { to { transform: rotate(360deg); } }
+  .hl-drawer-meta { font-size: 11px; color: var(--hl-muted); }
+  .hl-icon-btn { background: transparent; border: 0; color: var(--hl-muted); cursor: pointer; font-size: 16px; }
+
+  .hl-thread { flex: 1; overflow-y: auto; padding: 0.85rem; display: flex; flex-direction: column; gap: 0.6rem; }
+  .hl-msg {
+    padding: 0.55rem 0.7rem; border-radius: 8px; font-size: 12.5px; line-height: 1.5;
+    max-width: 95%; overflow-wrap: anywhere;
+  }
+  .hl-msg.user {
+    align-self: flex-end;
+    background: linear-gradient(135deg, var(--hl-accent), var(--hl-rose));
+    color: #fff; font-weight: 500;
+  }
+  .hl-msg.bot {
+    align-self: flex-start; background: rgba(255,255,255,0.04);
+    border: 1px solid var(--hl-edge2);
+  }
+  .hl-msg.bot p { margin: 0 0 0.4rem; }
+  .hl-msg.bot p:last-child { margin-bottom: 0; }
+  .hl-msg.bot ul { margin: 0.2rem 0; padding-left: 1.1rem; font-size: 12px; color: var(--hl-text); }
+  .hl-msg.bot li { margin-bottom: 0.15rem; }
+  .hl-msg.bot code { font-family: var(--__sl-font-mono); font-size: 11px; padding: 1px 4px; background: rgba(168, 85, 247, 0.15); border-radius: 3px; color: var(--hl-rose); }
+  .hl-tool {
+    margin-top: 0.4rem; padding: 0.35rem 0.5rem;
+    background: rgba(0,0,0,0.25); border-left: 2px solid var(--hl-accent);
+    border-radius: 0 4px 4px 0; font-size: 11.5px; color: var(--hl-muted);
+    display: flex; gap: 0.4rem; align-items: center;
+  }
+  .hl-tool-mark { color: var(--hl-accent); }
+  .hl-spin { display: inline-block; animation: hl-spin-orb 1.4s linear infinite; }
+  .hl-cur {
+    display: inline-block; width: 0.5em; height: 1em;
+    background: var(--hl-accent); margin-left: 2px; vertical-align: text-bottom;
+    animation: hl-blink 1s steps(2) infinite;
+  }
+  @keyframes hl-blink { 50% { opacity: 0; } }
+
+  .hl-actions { display: flex; gap: 0.35rem; flex-wrap: wrap; padding: 0.2rem 0; }
+  .hl-pill {
+    padding: 0.3rem 0.6rem; background: rgba(255,255,255,0.04);
+    border: 1px solid var(--hl-edge); border-radius: 999px;
+    color: var(--hl-text); font: inherit; font-size: 11.5px; cursor: pointer;
+  }
+  .hl-pill:hover { background: rgba(168, 85, 247, 0.15); }
+
+  .hl-input {
+    border-top: 1px solid var(--hl-edge2);
+    padding: 0.6rem 0.85rem 0.5rem;
+  }
+  .hl-input-box {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 0.55rem 0.75rem; background: rgba(0,0,0,0.3); border: 1px solid var(--hl-edge);
+    border-radius: 8px; color: var(--hl-muted); font-size: 12.5px;
+  }
+  .hl-cmd { font-family: var(--__sl-font-mono); font-size: 11px; color: var(--hl-text); }
+  .hl-foot { margin-top: 0.4rem; font-size: 10.5px; color: var(--hl-muted); }
+
+  @media (max-width: 900px) {
+    .hl-app { grid-template-columns: 1fr; }
+    .hl-drawer { border-left: 0; border-top: 1px solid var(--hl-edge); }
+    .hl-stat-row { grid-template-columns: repeat(2, 1fr); }
+    .hl-row { grid-template-columns: 1fr; }
+  }
+</style>

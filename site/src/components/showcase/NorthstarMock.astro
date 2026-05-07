@@ -1,0 +1,316 @@
+---
+// Sample 1 — Northstar CRM dashboard. Maps to Demo 01 in the course.
+// Palette: slate + blue, the canonical SaaS dashboard look.
+---
+
+<div class="ns-app">
+  <aside class="ns-sidebar">
+    <div class="ns-brand">
+      <span class="ns-logo">★</span>
+      <span class="ns-brand-name">Northstar</span>
+    </div>
+    <nav class="ns-nav">
+      <a class="ns-nav-item active" href="#"><span class="ns-i">▤</span> Dashboard</a>
+      <a class="ns-nav-item" href="#"><span class="ns-i">◔</span> Deals</a>
+      <a class="ns-nav-item" href="#"><span class="ns-i">◯</span> Contacts</a>
+      <a class="ns-nav-item" href="#"><span class="ns-i">↑</span> Activity</a>
+      <a class="ns-nav-item" href="#"><span class="ns-i">▦</span> Reports</a>
+      <a class="ns-nav-item" href="#"><span class="ns-i">⚙</span> Settings</a>
+    </nav>
+    <div class="ns-rep">
+      <div class="ns-avatar">SM</div>
+      <div>
+        <div class="ns-rep-name">Sara Martinez</div>
+        <div class="ns-rep-role">Sales Manager</div>
+      </div>
+    </div>
+  </aside>
+
+  <main class="ns-main">
+    <header class="ns-topbar">
+      <div class="ns-search">
+        <span aria-hidden="true">⌕</span>
+        <span>Search deals, contacts, activity…</span>
+        <kbd>⌘K</kbd>
+      </div>
+      <div class="ns-actions">
+        <button class="ns-icon-btn" aria-label="Notifications">●</button>
+        <div class="ns-avatar ns-avatar-sm">SM</div>
+      </div>
+    </header>
+
+    <section class="ns-content">
+      <div class="ns-page-head">
+        <div>
+          <h2>Dashboard</h2>
+          <p>Overview · last 30 days</p>
+        </div>
+        <div class="ns-page-tools">
+          <div class="ns-chip">Last 30d ▾</div>
+          <div class="ns-chip">All reps ▾</div>
+          <button class="ns-btn-primary">Export</button>
+        </div>
+      </div>
+
+      <div class="ns-kpis">
+        <article class="ns-kpi">
+          <span class="ns-kpi-label">Revenue</span>
+          <span class="ns-kpi-value">$1.24M</span>
+          <span class="ns-kpi-delta up">▲ 12.4%</span>
+        </article>
+        <article class="ns-kpi">
+          <span class="ns-kpi-label">Pipeline</span>
+          <span class="ns-kpi-value">$3.42M</span>
+          <span class="ns-kpi-delta up">▲ 8.1%</span>
+        </article>
+        <article class="ns-kpi">
+          <span class="ns-kpi-label">Win rate</span>
+          <span class="ns-kpi-value">32%</span>
+          <span class="ns-kpi-delta down">▼ 2.0%</span>
+        </article>
+        <article class="ns-kpi">
+          <span class="ns-kpi-label">Activities</span>
+          <span class="ns-kpi-value">184</span>
+          <span class="ns-kpi-delta up">▲ 24%</span>
+        </article>
+      </div>
+
+      <div class="ns-grid">
+        <article class="ns-card">
+          <header><h3>Revenue trend</h3><span class="ns-card-meta">Daily · last 30d</span></header>
+          <svg class="ns-chart" viewBox="0 0 320 120" preserveAspectRatio="none" aria-hidden="true">
+            <defs>
+              <linearGradient id="ns-g1" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#2563eb" stop-opacity="0.35"/>
+                <stop offset="100%" stop-color="#2563eb" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <path d="M0,90 L20,82 L40,86 L60,70 L80,74 L100,60 L120,52 L140,58 L160,46 L180,52 L200,40 L220,46 L240,32 L260,38 L280,28 L300,24 L320,20 L320,120 L0,120 Z" fill="url(#ns-g1)"/>
+            <path d="M0,90 L20,82 L40,86 L60,70 L80,74 L100,60 L120,52 L140,58 L160,46 L180,52 L200,40 L220,46 L240,32 L260,38 L280,28 L300,24 L320,20" fill="none" stroke="#2563eb" stroke-width="2"/>
+          </svg>
+        </article>
+        <article class="ns-card">
+          <header><h3>Pipeline by stage</h3><span class="ns-card-meta">Open deals</span></header>
+          <ul class="ns-bars">
+            <li><span class="ns-bar-l">Qualified</span><span class="ns-bar-track"><span class="ns-bar" style="--w:92%"></span></span><span class="ns-bar-v">$1.24M</span></li>
+            <li><span class="ns-bar-l">Discovery</span><span class="ns-bar-track"><span class="ns-bar" style="--w:74%"></span></span><span class="ns-bar-v">$985K</span></li>
+            <li><span class="ns-bar-l">Proposal</span><span class="ns-bar-track"><span class="ns-bar" style="--w:58%"></span></span><span class="ns-bar-v">$612K</span></li>
+            <li><span class="ns-bar-l">Negotiation</span><span class="ns-bar-track"><span class="ns-bar" style="--w:34%"></span></span><span class="ns-bar-v">$408K</span></li>
+            <li><span class="ns-bar-l">Closing</span><span class="ns-bar-track"><span class="ns-bar" style="--w:18%"></span></span><span class="ns-bar-v">$192K</span></li>
+          </ul>
+        </article>
+      </div>
+
+      <article class="ns-card ns-table-card">
+        <header>
+          <h3>Recent deals</h3>
+          <div class="ns-tabs">
+            <span class="ns-tab active">All</span>
+            <span class="ns-tab">Mine</span>
+            <span class="ns-tab">Closing soon</span>
+          </div>
+        </header>
+        <table class="ns-table">
+          <thead>
+            <tr><th>Account</th><th>Owner</th><th>Stage</th><th class="r">Value</th><th class="r">Close</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Acme Corp</strong><br/><span class="dim">Enterprise · Tech</span></td><td>Sara M.</td><td><span class="ns-badge won">Closed Won</span></td><td class="r">$42,000</td><td class="r">May 3</td></tr>
+            <tr><td><strong>Beta Inc</strong><br/><span class="dim">Mid-market · Health</span></td><td>Jake R.</td><td><span class="ns-badge review">In Review</span></td><td class="r">$18,500</td><td class="r">May 14</td></tr>
+            <tr><td><strong>Cipher Co</strong><br/><span class="dim">Enterprise · Finance</span></td><td>Maria L.</td><td><span class="ns-badge neg">Negotiation</span></td><td class="r">$87,000</td><td class="r">May 22</td></tr>
+            <tr><td><strong>Delta Labs</strong><br/><span class="dim">SMB · Bio</span></td><td>Sara M.</td><td><span class="ns-badge prop">Proposal</span></td><td class="r">$31,200</td><td class="r">Jun 6</td></tr>
+          </tbody>
+        </table>
+      </article>
+    </section>
+  </main>
+
+  <aside class="ns-feed">
+    <header><h3>Activity</h3><span class="ns-card-meta">Today</span></header>
+    <ul>
+      <li><span class="ns-dot won"></span><strong>Sara M.</strong> closed <strong>Acme Corp</strong> · $42K<br/><span class="dim">2m ago</span></li>
+      <li><span class="ns-dot call"></span><strong>Jake R.</strong> logged a call with <strong>Beta Inc</strong><br/><span class="dim">14m ago</span></li>
+      <li><span class="ns-dot mail"></span><strong>Maria L.</strong> sent proposal to <strong>Cipher Co</strong><br/><span class="dim">38m ago</span></li>
+      <li><span class="ns-dot mtg"></span><strong>Sara M.</strong> booked demo with <strong>Delta Labs</strong><br/><span class="dim">1h ago</span></li>
+    </ul>
+  </aside>
+</div>
+
+<style>
+  .ns-app {
+    --ns-bg: #f1f5f9;
+    --ns-card: #ffffff;
+    --ns-edge: #e2e8f0;
+    --ns-text: #0f172a;
+    --ns-muted: #64748b;
+    --ns-accent: #2563eb;
+    --ns-accent-soft: #dbeafe;
+    display: grid;
+    grid-template-columns: 200px 1fr 240px;
+    background: var(--ns-bg);
+    color: var(--ns-text);
+    min-height: 600px;
+    font: 13px/1.45 var(--__sl-font-system, system-ui), sans-serif;
+  }
+  .ns-sidebar {
+    background: #0f172a;
+    color: #cbd5e1;
+    padding: 1rem 0.75rem;
+    display: flex;
+    flex-direction: column;
+  }
+  .ns-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0 0.5rem 1rem;
+    border-bottom: 1px solid #1e293b;
+  }
+  .ns-logo {
+    width: 28px;
+    height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--ns-accent);
+    color: #fff;
+    border-radius: 7px;
+    font-size: 16px;
+  }
+  .ns-brand-name {
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: -0.01em;
+  }
+  .ns-nav { display: flex; flex-direction: column; gap: 2px; padding: 0.75rem 0; flex: 1; }
+  .ns-nav-item {
+    display: flex; align-items: center; gap: 0.6rem;
+    padding: 0.45rem 0.6rem; border-radius: 6px;
+    color: #94a3b8; text-decoration: none; font-size: 12.5px;
+  }
+  .ns-nav-item .ns-i { width: 14px; text-align: center; opacity: 0.7; }
+  .ns-nav-item.active { background: #1e293b; color: #fff; }
+  .ns-rep { display: flex; gap: 0.55rem; align-items: center; padding: 0.5rem; border-top: 1px solid #1e293b; }
+  .ns-rep-name { color: #fff; font-size: 12px; font-weight: 600; }
+  .ns-rep-role { color: #64748b; font-size: 11px; }
+
+  .ns-main { display: flex; flex-direction: column; min-width: 0; }
+  .ns-topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0.625rem 1rem; background: var(--ns-card); border-bottom: 1px solid var(--ns-edge);
+  }
+  .ns-search {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    width: 280px; max-width: 50%;
+    padding: 0.4rem 0.6rem; background: var(--ns-bg);
+    border: 1px solid var(--ns-edge); border-radius: 6px;
+    color: var(--ns-muted); font-size: 12px;
+  }
+  .ns-search kbd {
+    margin-left: auto;
+    padding: 1px 5px; background: var(--ns-card); border: 1px solid var(--ns-edge);
+    border-radius: 4px; font-size: 10px; color: var(--ns-muted);
+  }
+  .ns-actions { display: flex; gap: 0.5rem; align-items: center; }
+  .ns-icon-btn {
+    width: 30px; height: 30px; border: 1px solid var(--ns-edge); border-radius: 6px;
+    background: var(--ns-card); color: var(--ns-accent); cursor: pointer; font-size: 11px;
+  }
+  .ns-avatar {
+    width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #6366f1, #2563eb);
+    color: #fff; display: inline-flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700;
+  }
+  .ns-avatar-sm { width: 28px; height: 28px; font-size: 10px; }
+
+  .ns-content { padding: 1rem; display: flex; flex-direction: column; gap: 1rem; overflow: auto; }
+  .ns-page-head {
+    display: flex; justify-content: space-between; align-items: flex-end; gap: 1rem; flex-wrap: wrap;
+  }
+  .ns-page-head h2 { margin: 0; font-size: 18px; font-weight: 700; }
+  .ns-page-head p { margin: 2px 0 0; color: var(--ns-muted); font-size: 12px; }
+  .ns-page-tools { display: flex; gap: 0.4rem; align-items: center; }
+  .ns-chip {
+    padding: 0.3rem 0.55rem; background: var(--ns-card); border: 1px solid var(--ns-edge);
+    border-radius: 6px; font-size: 12px;
+  }
+  .ns-btn-primary {
+    padding: 0.35rem 0.7rem; background: var(--ns-accent); color: #fff;
+    border: 0; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer;
+  }
+
+  .ns-kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.6rem; }
+  .ns-kpi {
+    padding: 0.75rem; background: var(--ns-card); border: 1px solid var(--ns-edge);
+    border-radius: 8px; display: flex; flex-direction: column; gap: 4px;
+  }
+  .ns-kpi-label { font-size: 11px; color: var(--ns-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+  .ns-kpi-value { font-size: 20px; font-weight: 700; letter-spacing: -0.01em; }
+  .ns-kpi-delta { font-size: 11px; font-weight: 600; }
+  .ns-kpi-delta.up { color: #16a34a; }
+  .ns-kpi-delta.down { color: #dc2626; }
+
+  .ns-grid { display: grid; grid-template-columns: 1.5fr 1fr; gap: 0.75rem; }
+  .ns-card {
+    background: var(--ns-card); border: 1px solid var(--ns-edge); border-radius: 8px;
+    padding: 0.75rem;
+  }
+  .ns-card header { display: flex; justify-content: space-between; align-items: baseline; gap: 0.5rem; margin-bottom: 0.5rem; }
+  .ns-card h3 { margin: 0; font-size: 13px; font-weight: 700; }
+  .ns-card-meta { font-size: 11px; color: var(--ns-muted); }
+  .ns-chart { width: 100%; height: 100px; }
+
+  .ns-bars { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.4rem; }
+  .ns-bars li {
+    display: grid; grid-template-columns: 70px 1fr 60px;
+    gap: 0.4rem; align-items: center; font-size: 11px;
+  }
+  .ns-bar-track { height: 6px; background: var(--ns-bg); border-radius: 3px; overflow: hidden; }
+  .ns-bar { display: block; height: 100%; width: var(--w); background: var(--ns-accent); border-radius: 3px; }
+  .ns-bar-v { color: var(--ns-muted); text-align: right; }
+
+  .ns-tabs { display: inline-flex; gap: 0.4rem; }
+  .ns-tab { font-size: 11px; padding: 3px 8px; border-radius: 999px; color: var(--ns-muted); }
+  .ns-tab.active { background: var(--ns-accent-soft); color: var(--ns-accent); font-weight: 600; }
+
+  .ns-table-card { padding: 0.75rem 0.75rem 0.5rem; }
+  .ns-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .ns-table th { text-align: left; color: var(--ns-muted); font-weight: 500; padding: 0.4rem 0.5rem; border-bottom: 1px solid var(--ns-edge); font-size: 11px; }
+  .ns-table td { padding: 0.55rem 0.5rem; border-bottom: 1px solid var(--ns-edge); }
+  .ns-table tr:last-child td { border-bottom: 0; }
+  .ns-table .r { text-align: right; }
+  .ns-table .dim { color: var(--ns-muted); font-size: 10.5px; }
+
+  .ns-badge {
+    display: inline-block; padding: 2px 7px; border-radius: 999px;
+    font-size: 10.5px; font-weight: 600;
+  }
+  .ns-badge.won { background: #dcfce7; color: #166534; }
+  .ns-badge.review { background: #fef9c3; color: #854d0e; }
+  .ns-badge.neg { background: #fce7f3; color: #9d174d; }
+  .ns-badge.prop { background: var(--ns-accent-soft); color: var(--ns-accent); }
+
+  .ns-feed {
+    background: var(--ns-card); border-left: 1px solid var(--ns-edge);
+    padding: 1rem;
+  }
+  .ns-feed header { margin-bottom: 0.6rem; display: flex; justify-content: space-between; align-items: baseline; }
+  .ns-feed h3 { margin: 0; font-size: 13px; font-weight: 700; }
+  .ns-feed ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.6rem; }
+  .ns-feed li {
+    position: relative; padding-left: 1rem; font-size: 12px;
+  }
+  .ns-feed li .dim { color: var(--ns-muted); font-size: 10.5px; }
+  .ns-dot { position: absolute; left: 0; top: 5px; width: 7px; height: 7px; border-radius: 50%; }
+  .ns-dot.won { background: #16a34a; }
+  .ns-dot.call { background: #2563eb; }
+  .ns-dot.mail { background: #a855f7; }
+  .ns-dot.mtg { background: #f59e0b; }
+
+  @media (max-width: 900px) {
+    .ns-app { grid-template-columns: 1fr; }
+    .ns-sidebar, .ns-feed { display: none; }
+    .ns-kpis { grid-template-columns: repeat(2, 1fr); }
+    .ns-grid { grid-template-columns: 1fr; }
+  }
+</style>

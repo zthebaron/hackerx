@@ -1,0 +1,88 @@
+---
+interface Props {
+  patterns: string[];
+  stack: string[];
+  demoHref: string;
+  demoLabel: string;
+}
+const { patterns, stack, demoHref, demoLabel } = Astro.props;
+---
+
+<aside class="hx-notes">
+  <dl>
+    <dt>Patterns shown</dt>
+    <dd>
+      <ul>
+        {patterns.map((p) => <li><code>{p}</code></li>)}
+      </ul>
+    </dd>
+    <dt>Built with</dt>
+    <dd>
+      <ul class="hx-notes-stack">
+        {stack.map((s) => <li>{s}</li>)}
+      </ul>
+    </dd>
+    <dt>Walkthrough</dt>
+    <dd>
+      <a href={demoHref}>{demoLabel} →</a>
+    </dd>
+  </dl>
+</aside>
+
+<style>
+  .hx-notes {
+    padding: 1rem 1.25rem;
+    background: var(--sl-color-bg-sidebar);
+    border: 1px solid var(--sl-color-gray-5);
+    border-left: 3px solid var(--sl-color-text-accent);
+    border-radius: 0 0.5rem 0.5rem 0;
+    font-size: 0.875rem;
+  }
+  .hx-notes dl {
+    margin: 0;
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: 0.4rem 1rem;
+    align-items: baseline;
+  }
+  .hx-notes dt {
+    font-family: var(--__sl-font-mono);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--sl-color-gray-3);
+  }
+  .hx-notes dd {
+    margin: 0;
+  }
+  .hx-notes ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem 0.4rem;
+  }
+  .hx-notes-stack li {
+    color: var(--sl-color-gray-2);
+  }
+  .hx-notes-stack li:not(:last-child)::after {
+    content: ' · ';
+    color: var(--sl-color-gray-4);
+  }
+  .hx-notes code {
+    font-size: 0.75rem;
+    padding: 0.0625rem 0.4rem;
+    background: var(--sl-color-bg-inline-code);
+    color: var(--sl-color-text-accent);
+    border-radius: 0.25rem;
+  }
+  .hx-notes a {
+    color: var(--sl-color-text-accent);
+    font-weight: 600;
+  }
+  @media (max-width: 600px) {
+    .hx-notes dl { grid-template-columns: 1fr; gap: 0.25rem; }
+    .hx-notes dt { margin-top: 0.5rem; }
+  }
+</style>

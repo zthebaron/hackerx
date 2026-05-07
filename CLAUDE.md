@@ -1,8 +1,15 @@
 # HackerX — Project Conventions
 
-This is the working directory for the HackerX course (formerly Vibe Coder 100x). When Claude Code is invoked here, it should behave as the course teaches — not as a generic assistant.
+This is the working directory for the HackerX product (formerly Vibe Coder 100x). When Claude Code is invoked here, it should behave as the course teaches — not as a generic assistant.
 
-The product surface is `hackerx.app`. The course is the source of truth for the site at `site/` and the CLI at `cli/`.
+The product surface is **[hackerx.app](https://hackerx.app)**. This monorepo contains:
+
+- **Course markdown** (`00-start-here/` … `11-final-operating-system/`, `templates/`) — the canonical source of truth.
+- **`site/`** — the Astro Starlight site that powers hackerx.app. Reads from `site/course/` (a build-time copy of the canonical content).
+- **`cli/`** — the `hackerx` npm CLI + Claude Code plugin.
+- **`scripts/sync-course-to-site.sh`** — copies the canonical course modules into `site/course/` after edits.
+
+When you change course markdown at the repo root, also run `scripts/sync-course-to-site.sh` so the site rebuild picks up the change.
 
 ## Behavior rules
 

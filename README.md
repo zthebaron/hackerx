@@ -6,7 +6,28 @@ Most people get stuck with AI coding tools because they know a screen feels clut
 
 HackerX teaches you the language of modern UI/UX so you can prompt Claude Code with **outcomes**, not vague component names — and ship 100x faster.
 
-Live: [hackerx.app](https://hackerx.app)
+Live: **[hackerx.app](https://hackerx.app)**
+
+## Install in 10 seconds
+
+```bash
+npx hackerx init
+```
+
+Drops `CLAUDE.md`, `.claude/skills/ui-pattern-picker/`, and a PR template into your repo. Open Claude Code. Watch the next vague UI request return three options instead of one mediocre one.
+
+## What's in this repo
+
+```
+hackerx/
+├── 00-start-here/ ... 11-final-operating-system/, templates/   # course markdown (canonical)
+├── site/         Astro Starlight site that powers hackerx.app
+│   └── course/   build-time copy of the course (regenerate with scripts/sync-course-to-site.sh)
+├── cli/          npm package: `hackerx` CLI + Claude Code plugin
+└── scripts/      sync-course-to-site.sh
+```
+
+The course markdown is the source of truth. The site reads from `site/course/` (a copy) so Vercel's build can see it. Run `scripts/sync-course-to-site.sh` after editing course content at the repo root.
 
 ---
 

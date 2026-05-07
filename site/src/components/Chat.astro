@@ -1,68 +1,92 @@
 ---
 /**
  * Floating chatbot launcher rendered into the footer on every page.
- * Calls /api/chat (Anthropic Claude Haiku 4.5) with streaming.
+ * - /api/chat (Anthropic Claude Haiku 4.5) for streaming text.
+ * - /api/tts (ElevenLabs) for the speaker / "Listen" feature.
+ *
+ * Cluster has two buttons: a global speaker toggle (auto-speak on/off) and the
+ * chat launcher. Inside the panel: voice selector chips for Emily / Adam / Rachel.
  */
 ---
 
-<div id="hx-chat-root" data-state="closed">
-  <button type="button" id="hx-chat-launcher" aria-label="Ask the HackerX assistant" aria-expanded="false">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-    </svg>
-    <span>Ask Claude</span>
-  </button>
+<div id="hx-chat-root" data-state="closed" data-autospeak="off">
+  <div class="hx-cluster">
+    <button
+      type="button"
+      id="hx-autospeak-toggle"
+      class="hx-cluster-btn hx-speaker-btn"
+      aria-label="Toggle automatic voice playback for replies"
+      data-state="off"
+      title="Auto-read replies aloud"
+    >
+      <svg class="hx-speaker-on" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+        <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
+        <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
+      </svg>
+      <svg class="hx-speaker-off" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+        <line x1="22" y1="9" x2="16" y2="15"/>
+        <line x1="16" y1="9" x2="22" y2="15"/>
+      </svg>
+    </button>
+
+    <button type="button" id="hx-chat-launcher" class="hx-cluster-btn hx-chat-btn" aria-label="Ask the HackerX assistant" aria-expanded="false">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+      </svg>
+      <span>Ask Claude</span>
+    </button>
+  </div>
 
   <section id="hx-chat-panel" role="dialog" aria-label="HackerX assistant" aria-modal="false" hidden>
-    <header class="hx-chat-header">
-      <div class="hx-chat-title">
-        <span class="hx-chat-dot" aria-hidden="true"></span>
-        <h2>HackerX assistant</h2>
-        <span class="hx-chat-model">Claude Haiku 4.5</span>
+    <header class="hx-panel-head">
+      <div class="hx-panel-title">
+        <span class="hx-panel-orb" aria-hidden="true"></span>
+        <strong>HackerX</strong>
+        <span class="hx-panel-sub">assistant</span>
       </div>
-      <button type="button" class="hx-chat-close" id="hx-chat-close" aria-label="Close chat">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+
+      <div class="hx-voice-row" role="radiogroup" aria-label="Voice for spoken replies">
+        <button type="button" class="hx-voice" data-voice="Emily" role="radio" aria-checked="true" title="Emily — warm narrator">E</button>
+        <button type="button" class="hx-voice" data-voice="Adam" role="radio" aria-checked="false" title="Adam — deep narrator">A</button>
+        <button type="button" class="hx-voice" data-voice="Rachel" role="radio" aria-checked="false" title="Rachel — calm">R</button>
+      </div>
+
+      <button type="button" class="hx-panel-close" id="hx-chat-close" aria-label="Close chat">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <line x1="18" y1="6" x2="6" y2="18"></line>
           <line x1="6" y1="6" x2="18" y2="18"></line>
         </svg>
       </button>
     </header>
 
-    <div class="hx-chat-log" id="hx-chat-log" role="log" aria-live="polite" aria-label="Chat messages">
-      <div class="hx-chat-empty" data-empty>
-        <p>Ask about the patterns, prompts, or workflow.</p>
-        <ul class="hx-chat-suggestions">
-          <li><button type="button" class="hx-chat-suggest" data-suggest="What pattern fits a settings page that feels cluttered?">What pattern fits a settings page that feels cluttered?</button></li>
-          <li><button type="button" class="hx-chat-suggest" data-suggest="How do I install the ui-pattern-picker skill?">How do I install the ui-pattern-picker skill?</button></li>
-          <li><button type="button" class="hx-chat-suggest" data-suggest="Give me the 8-step OS as a paste-into-CLAUDE.md block.">Give me the 8-step OS as a paste-into-CLAUDE.md block.</button></li>
-        </ul>
-      </div>
-    </div>
+    <div class="hx-log" id="hx-chat-log" role="log" aria-live="polite" aria-label="Chat messages"></div>
 
-    <form class="hx-chat-form" id="hx-chat-form">
-      <label class="hx-chat-input-wrap">
+    <form class="hx-form" id="hx-chat-form">
+      <label class="hx-input-wrap">
         <span class="sr-only">Your question</span>
         <textarea
           id="hx-chat-input"
           name="message"
           rows="1"
-          placeholder="Ask the HackerX assistant..."
+          placeholder="Ask the HackerX assistant…"
           autocomplete="off"
           required
           maxlength="4000"
         ></textarea>
       </label>
-      <button type="submit" class="hx-chat-send" aria-label="Send">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <button type="submit" class="hx-send" aria-label="Send">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <line x1="22" y1="2" x2="11" y2="13"></line>
           <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
         </svg>
       </button>
     </form>
 
-    <footer class="hx-chat-foot">
-      <span>Streaming via Anthropic. Verify before shipping.</span>
-      <button type="button" class="hx-chat-clear" id="hx-chat-clear" aria-label="Clear conversation">Clear</button>
+    <footer class="hx-foot">
+      <span class="hx-foot-meta">Claude Haiku 4.5 · ElevenLabs</span>
+      <button type="button" class="hx-clear" id="hx-chat-clear">Clear</button>
     </footer>
   </section>
 </div>
@@ -76,117 +100,199 @@
     color: var(--sl-color-text);
   }
 
-  #hx-chat-launcher {
+  /* ─── Launcher cluster ──────────────────────────────────────── */
+  .hx-cluster {
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
-    padding: 0.625rem 1rem;
-    background: var(--sl-color-text-accent);
-    color: var(--sl-color-text-invert);
+    gap: 0.4rem;
+    background: var(--sl-color-bg);
+    padding: 0.3rem;
+    border-radius: 999px;
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.3), 0 0 0 1px var(--sl-color-gray-5);
+    transition: opacity 200ms ease;
+  }
+  #hx-chat-root[data-state='open'] .hx-cluster {
+    opacity: 0;
+    pointer-events: none;
+  }
+  .hx-cluster-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.45rem 0.7rem;
+    background: transparent;
+    color: var(--sl-color-text);
     border: 0;
     border-radius: 999px;
     font: inherit;
+    font-size: 0.82rem;
     font-weight: 600;
-    font-size: 0.85rem;
     cursor: pointer;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18), 0 0 0 1px rgba(16, 185, 129, 0.4);
-    transition: transform 120ms ease, box-shadow 120ms ease;
+    transition: background 120ms ease, color 120ms ease;
   }
-  #hx-chat-launcher:hover {
+  .hx-cluster-btn:focus-visible {
+    outline: 2px solid var(--sl-color-text-accent);
+    outline-offset: 2px;
+  }
+  .hx-speaker-btn {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    justify-content: center;
+    color: var(--sl-color-gray-3);
+  }
+  .hx-speaker-btn:hover {
+    color: var(--sl-color-text);
+    background: var(--sl-color-bg-inline-code);
+  }
+  .hx-speaker-btn[data-state='on'] {
+    color: var(--sl-color-text-invert);
+    background: var(--sl-color-text-accent);
+  }
+  .hx-speaker-on { display: none; }
+  .hx-speaker-off { display: inline; }
+  .hx-speaker-btn[data-state='on'] .hx-speaker-on { display: inline; }
+  .hx-speaker-btn[data-state='on'] .hx-speaker-off { display: none; }
+
+  .hx-chat-btn {
+    background: var(--sl-color-text-accent);
+    color: var(--sl-color-text-invert);
+  }
+  .hx-chat-btn:hover {
     transform: translateY(-1px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.24), 0 0 0 1px rgba(16, 185, 129, 0.6);
-  }
-  #hx-chat-launcher:focus-visible {
-    outline: 2px solid var(--sl-color-white);
-    outline-offset: 3px;
-  }
-  #hx-chat-root[data-state='open'] #hx-chat-launcher {
-    display: none;
+    box-shadow: 0 6px 18px rgba(16, 185, 129, 0.35);
   }
 
+  /* ─── Panel ─────────────────────────────────────────────────── */
   #hx-chat-panel {
-    width: 380px;
+    width: 400px;
     max-width: calc(100vw - 2rem);
-    height: 540px;
+    height: 580px;
     max-height: calc(100vh - 2rem);
     background: var(--sl-color-bg);
     border: 1px solid var(--sl-color-gray-5);
-    border-radius: 0.75rem;
-    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+    border-radius: 1rem;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    transform-origin: bottom right;
+    animation: hx-pop 220ms cubic-bezier(0.2, 0.7, 0.2, 1);
   }
-  #hx-chat-panel[hidden] {
-    display: none;
+  #hx-chat-panel[hidden] { display: none; }
+  @keyframes hx-pop {
+    from { opacity: 0; transform: scale(0.92) translateY(8px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
   }
 
-  .hx-chat-header {
-    display: flex;
+  /* ─── Header ────────────────────────────────────────────────── */
+  .hx-panel-head {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 0.5rem;
     align-items: center;
-    justify-content: space-between;
-    padding: 0.65rem 0.85rem;
-    background: var(--sl-color-bg-sidebar);
+    padding: 0.7rem 0.85rem;
+    background: linear-gradient(180deg, var(--sl-color-bg-sidebar), var(--sl-color-bg));
     border-bottom: 1px solid var(--sl-color-gray-5);
   }
-  .hx-chat-title {
-    display: flex;
+  .hx-panel-title {
+    display: inline-flex;
     align-items: center;
     gap: 0.5rem;
+    font-size: 0.95rem;
   }
-  .hx-chat-title h2 {
-    font-size: 0.9rem;
-    margin: 0;
-  }
-  .hx-chat-dot {
-    width: 8px;
-    height: 8px;
-    background: var(--sl-color-text-accent);
+  .hx-panel-orb {
+    width: 10px;
+    height: 10px;
     border-radius: 50%;
-    box-shadow: 0 0 8px var(--sl-color-text-accent);
-    animation: hx-chat-pulse 1.6s ease-in-out infinite;
+    background: var(--sl-color-text-accent);
+    box-shadow: 0 0 12px var(--sl-color-text-accent);
+    animation: hx-orb-pulse 2.4s ease-in-out infinite;
   }
-  @keyframes hx-chat-pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.4; }
+  @keyframes hx-orb-pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.85); }
   }
-  .hx-chat-model {
-    font-family: var(--__sl-font-mono);
-    font-size: 0.65rem;
+  .hx-panel-sub {
     color: var(--sl-color-gray-3);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+    font-size: 0.78rem;
+    font-weight: 500;
   }
-  .hx-chat-close {
+
+  /* Voice selector */
+  .hx-voice-row {
+    display: inline-flex;
+    gap: 2px;
+    padding: 2px;
+    background: var(--sl-color-gray-6);
+    border-radius: 999px;
+    border: 1px solid var(--sl-color-gray-5);
+  }
+  .hx-voice {
+    width: 22px;
+    height: 22px;
+    background: transparent;
+    color: var(--sl-color-gray-3);
+    border: 0;
+    border-radius: 50%;
+    font: inherit;
+    font-size: 0.72rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: color 120ms ease, background 120ms ease;
+  }
+  .hx-voice:hover { color: var(--sl-color-text); }
+  .hx-voice[aria-checked='true'] {
+    background: var(--sl-color-text-accent);
+    color: var(--sl-color-text-invert);
+  }
+
+  .hx-panel-close {
+    width: 26px;
+    height: 26px;
     background: transparent;
     border: 0;
-    color: var(--sl-color-gray-2);
-    padding: 0.25rem;
+    color: var(--sl-color-gray-3);
+    border-radius: 6px;
     cursor: pointer;
-    border-radius: 0.25rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
   }
-  .hx-chat-close:hover {
+  .hx-panel-close:hover {
     background: var(--sl-color-gray-6);
     color: var(--sl-color-text);
   }
 
-  .hx-chat-log {
+  /* ─── Log ───────────────────────────────────────────────────── */
+  .hx-log {
     flex: 1;
     overflow-y: auto;
-    padding: 0.85rem;
+    padding: 1rem;
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+    gap: 0.65rem;
     scroll-behavior: smooth;
   }
-  .hx-chat-empty {
+  .hx-log::-webkit-scrollbar { width: 6px; }
+  .hx-log::-webkit-scrollbar-thumb { background: var(--sl-color-gray-5); border-radius: 3px; }
+
+  .hx-empty {
     color: var(--sl-color-gray-3);
     font-size: 0.85rem;
+    padding: 0.5rem 0;
   }
-  .hx-chat-empty p {
-    margin: 0 0 0.75rem;
+  .hx-empty-h {
+    margin: 0 0 0.85rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--sl-color-text);
   }
-  .hx-chat-suggestions {
+  .hx-empty-h em {
+    font-style: normal;
+    color: var(--sl-color-text-accent);
+  }
+  .hx-suggest-list {
     list-style: none;
     margin: 0;
     padding: 0;
@@ -194,188 +300,187 @@
     flex-direction: column;
     gap: 0.4rem;
   }
-  .hx-chat-suggest {
+  .hx-suggest {
     width: 100%;
     text-align: left;
-    padding: 0.45rem 0.625rem;
+    padding: 0.55rem 0.75rem;
     background: var(--sl-color-bg-sidebar);
     border: 1px solid var(--sl-color-gray-5);
-    border-radius: 0.375rem;
+    border-radius: 0.5rem;
     font: inherit;
-    font-size: 0.8rem;
+    font-size: 0.825rem;
     color: var(--sl-color-text);
     cursor: pointer;
+    display: flex;
+    gap: 0.5rem;
+    align-items: flex-start;
+    transition: border-color 120ms ease, transform 120ms ease;
   }
-  .hx-chat-suggest:hover {
+  .hx-suggest:hover {
     border-color: var(--sl-color-text-accent);
+    transform: translateY(-1px);
+  }
+  .hx-suggest-icon {
     color: var(--sl-color-text-accent);
+    flex-shrink: 0;
+    margin-top: 2px;
   }
 
-  .hx-chat-msg {
+  /* Messages */
+  .hx-msg {
     max-width: 92%;
-    padding: 0.55rem 0.75rem;
-    border-radius: 0.5rem;
+    padding: 0.6rem 0.8rem;
+    border-radius: 0.6rem;
     font-size: 0.875rem;
-    line-height: 1.45;
+    line-height: 1.5;
     overflow-wrap: anywhere;
   }
-  .hx-chat-msg.user {
+  .hx-msg.user {
     align-self: flex-end;
     background: var(--sl-color-text-accent);
     color: var(--sl-color-text-invert);
-    border-bottom-right-radius: 0.125rem;
+    border-bottom-right-radius: 0.15rem;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.18);
   }
-  .hx-chat-msg.assistant {
+  .hx-msg.assistant {
     align-self: flex-start;
     background: var(--sl-color-bg-sidebar);
     border: 1px solid var(--sl-color-gray-5);
-    border-bottom-left-radius: 0.125rem;
+    border-bottom-left-radius: 0.15rem;
   }
-  .hx-chat-msg.assistant pre {
+  .hx-msg.assistant pre {
     margin: 0.5rem 0;
-    padding: 0.5rem 0.75rem;
+    padding: 0.55rem 0.75rem;
     background: var(--sl-color-bg);
     border: 1px solid var(--sl-color-gray-5);
-    border-radius: 0.375rem;
+    border-radius: 0.4rem;
     font-family: var(--__sl-font-mono);
-    font-size: 0.8rem;
+    font-size: 0.78rem;
     overflow-x: auto;
     white-space: pre;
   }
-  .hx-chat-msg.assistant code:not(pre code) {
-    padding: 0.0625rem 0.3rem;
+  .hx-msg.assistant code:not(pre code) {
+    padding: 1px 5px;
     background: var(--sl-color-bg-inline-code);
-    border-radius: 0.25rem;
+    border-radius: 3px;
     font-family: var(--__sl-font-mono);
     font-size: 0.85em;
   }
-  .hx-chat-msg.assistant a {
+  .hx-msg.assistant a {
     color: var(--sl-color-text-accent);
     text-decoration: underline;
+    text-underline-offset: 2px;
   }
-  .hx-chat-msg p {
-    margin: 0 0 0.5rem;
-  }
-  .hx-chat-msg p:last-child {
-    margin-bottom: 0;
-  }
-  .hx-chat-msg.error {
+  .hx-msg p { margin: 0 0 0.5rem; }
+  .hx-msg p:last-child { margin-bottom: 0; }
+  .hx-msg.error {
     align-self: flex-start;
     background: transparent;
     border: 1px dashed #b91c1c;
     color: #ef4444;
     font-size: 0.8rem;
   }
-  .hx-chat-tools {
+  .hx-cur {
+    display: inline-block;
+    width: 0.45em;
+    height: 1em;
+    background: var(--sl-color-text-accent);
+    margin-left: 1px;
+    vertical-align: text-bottom;
+    animation: hx-blink 1s steps(2) infinite;
+  }
+  @keyframes hx-blink { 50% { opacity: 0; } }
+
+  /* Per-message speaker icon (icon-only) */
+  .hx-msg-tools {
     display: flex;
     gap: 0.25rem;
-    margin-top: 0.4rem;
-    padding-top: 0.4rem;
-    border-top: 1px solid var(--sl-color-gray-5);
+    margin-top: 0.5rem;
   }
-  .hx-chat-speaker {
+  .hx-listen {
     display: inline-flex;
     align-items: center;
-    gap: 0.25rem;
-    padding: 0.2rem 0.45rem;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    padding: 0;
     background: transparent;
     color: var(--sl-color-gray-3);
     border: 1px solid transparent;
-    border-radius: 0.25rem;
-    font: inherit;
-    font-size: 0.7rem;
+    border-radius: 4px;
     cursor: pointer;
-    transition: color 120ms ease, border-color 120ms ease;
+    transition: all 120ms ease;
   }
-  .hx-chat-speaker:hover {
+  .hx-listen:hover {
     color: var(--sl-color-text-accent);
     border-color: var(--sl-color-gray-5);
   }
-  .hx-chat-speaker[data-state='loading'] svg {
-    animation: hx-spin 1s linear infinite;
-  }
-  .hx-chat-speaker[data-state='playing'] {
+  .hx-listen[data-state='loading'] svg { animation: hx-spin 1s linear infinite; }
+  .hx-listen[data-state='playing'] {
     color: var(--sl-color-text-accent);
+    background: var(--sl-color-bg-inline-code);
     border-color: var(--sl-color-text-accent);
   }
-  .hx-chat-speaker[data-disabled] {
-    cursor: not-allowed;
-    opacity: 0.6;
-  }
-  @keyframes hx-spin {
-    to { transform: rotate(360deg); }
-  }
+  .hx-listen[data-disabled] { cursor: not-allowed; opacity: 0.6; }
+  @keyframes hx-spin { to { transform: rotate(360deg); } }
 
-  .hx-chat-cursor {
-    display: inline-block;
-    width: 0.5em;
-    height: 1em;
-    margin-left: 1px;
-    background: var(--sl-color-text-accent);
-    vertical-align: text-bottom;
-    animation: hx-chat-blink 1s steps(2) infinite;
-  }
-  @keyframes hx-chat-blink {
-    50% { opacity: 0; }
-  }
-
-  .hx-chat-form {
+  /* ─── Form ──────────────────────────────────────────────────── */
+  .hx-form {
     display: flex;
     gap: 0.4rem;
-    padding: 0.6rem 0.75rem;
+    padding: 0.65rem 0.85rem;
     border-top: 1px solid var(--sl-color-gray-5);
     background: var(--sl-color-bg);
   }
-  .hx-chat-input-wrap {
-    flex: 1;
-    display: block;
-  }
-  .hx-chat-form textarea {
+  .hx-input-wrap { flex: 1; }
+  .hx-form textarea {
     width: 100%;
     min-height: 38px;
     max-height: 120px;
-    padding: 0.5rem 0.625rem;
+    padding: 0.55rem 0.75rem;
     background: var(--sl-color-bg-sidebar);
     border: 1px solid var(--sl-color-gray-5);
-    border-radius: 0.375rem;
+    border-radius: 0.5rem;
     color: var(--sl-color-text);
     font: inherit;
-    font-size: 0.85rem;
+    font-size: 0.875rem;
     resize: none;
-    line-height: 1.4;
+    line-height: 1.45;
+    transition: border-color 120ms ease, box-shadow 120ms ease;
   }
-  .hx-chat-form textarea:focus {
-    outline: 2px solid var(--sl-color-accent);
-    outline-offset: 1px;
+  .hx-form textarea:focus {
+    outline: none;
+    border-color: var(--sl-color-text-accent);
+    box-shadow: 0 0 0 3px var(--sl-color-bg-inline-code);
   }
-  .hx-chat-send {
+  .hx-send {
     align-self: stretch;
     width: 38px;
     background: var(--sl-color-text-accent);
     color: var(--sl-color-text-invert);
     border: 0;
-    border-radius: 0.375rem;
+    border-radius: 0.5rem;
     cursor: pointer;
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    transition: transform 100ms ease, opacity 100ms ease;
   }
-  .hx-chat-send:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
+  .hx-send:hover { transform: scale(1.04); }
+  .hx-send:disabled { opacity: 0.5; cursor: not-allowed; }
 
-  .hx-chat-foot {
+  .hx-foot {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0.4rem 0.75rem;
+    padding: 0.4rem 0.85rem;
     background: var(--sl-color-bg-sidebar);
     border-top: 1px solid var(--sl-color-gray-5);
     font-size: 0.7rem;
     color: var(--sl-color-gray-3);
   }
-  .hx-chat-clear {
+  .hx-foot-meta { font-family: var(--__sl-font-mono); }
+  .hx-clear {
     background: transparent;
     border: 0;
     color: var(--sl-color-gray-3);
@@ -384,34 +489,24 @@
     font: inherit;
     font-size: 0.7rem;
   }
-  .hx-chat-clear:hover {
-    color: var(--sl-color-text);
-  }
+  .hx-clear:hover { color: var(--sl-color-text); }
 
   .sr-only {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
+    position: absolute; width: 1px; height: 1px;
+    overflow: hidden; clip: rect(0, 0, 0, 0);
   }
 
   @media (max-width: 640px) {
-    #hx-chat-root {
-      inset: auto 0.75rem 0.75rem auto;
-    }
+    #hx-chat-root { inset: auto 0.6rem 0.6rem 0.6rem; }
     #hx-chat-panel {
-      width: calc(100vw - 1.5rem);
+      width: calc(100vw - 1.2rem);
       height: calc(100vh - 6rem);
-      max-height: 80vh;
     }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .hx-chat-dot,
-    .hx-chat-cursor {
-      animation: none;
-    }
+    .hx-panel-orb, .hx-cur { animation: none; }
+    #hx-chat-panel { animation: none; }
   }
 </style>
 
@@ -419,6 +514,7 @@
   (() => {
     const rootEl = document.getElementById('hx-chat-root') as HTMLElement | null;
     const launcherEl = document.getElementById('hx-chat-launcher') as HTMLButtonElement | null;
+    const autospeakEl = document.getElementById('hx-autospeak-toggle') as HTMLButtonElement | null;
     const panelEl = document.getElementById('hx-chat-panel') as HTMLElement | null;
     const closeEl = document.getElementById('hx-chat-close') as HTMLButtonElement | null;
     const logEl = document.getElementById('hx-chat-log') as HTMLElement | null;
@@ -426,39 +522,67 @@
     const inputEl = document.getElementById('hx-chat-input') as HTMLTextAreaElement | null;
     const clearEl = document.getElementById('hx-chat-clear') as HTMLButtonElement | null;
 
-    if (!rootEl || !launcherEl || !panelEl || !closeEl || !logEl || !formEl || !inputEl || !clearEl) return;
-    const root = rootEl;
-    const launcher = launcherEl;
-    const panel = panelEl;
-    const closeBtn = closeEl;
-    const log = logEl;
-    const form = formEl;
-    const input = inputEl;
-    const clearBtn = clearEl;
+    if (!rootEl || !launcherEl || !autospeakEl || !panelEl || !closeEl || !logEl || !formEl || !inputEl || !clearEl) return;
+    const root = rootEl, launcher = launcherEl, autospeak = autospeakEl, panel = panelEl;
+    const closeBtn = closeEl, log = logEl, form = formEl, input = inputEl, clearBtn = clearEl;
 
-    const STORAGE_KEY = 'hx_chat_history_v1';
+    const HISTORY_KEY = 'hx_chat_history_v1';
+    const VOICE_KEY = 'hx_voice';
+    const AUTOSPEAK_KEY = 'hx_autospeak';
+    const VOICES = ['Emily', 'Adam', 'Rachel'] as const;
+
     type Msg = { role: 'user' | 'assistant'; content: string };
     let history: Msg[] = [];
     let inFlight: AbortController | null = null;
 
+    let voice: string = (() => {
+      try {
+        const v = localStorage.getItem(VOICE_KEY);
+        return VOICES.includes(v as typeof VOICES[number]) ? v! : 'Emily';
+      } catch { return 'Emily'; }
+    })();
+
+    let autospeakOn: boolean = (() => {
+      try { return localStorage.getItem(AUTOSPEAK_KEY) === '1'; }
+      catch { return false; }
+    })();
+
+    function setVoice(v: string) {
+      voice = v;
+      try { localStorage.setItem(VOICE_KEY, v); } catch {}
+      panel.querySelectorAll<HTMLButtonElement>('.hx-voice').forEach((b) => {
+        b.setAttribute('aria-checked', b.dataset.voice === v ? 'true' : 'false');
+      });
+    }
+
+    function setAutospeak(on: boolean) {
+      autospeakOn = on;
+      try { localStorage.setItem(AUTOSPEAK_KEY, on ? '1' : '0'); } catch {}
+      autospeak.dataset.state = on ? 'on' : 'off';
+      autospeak.title = on ? 'Auto-read replies aloud (on — click to mute)' : 'Auto-read replies aloud (off — click to enable)';
+      root.dataset.autospeak = on ? 'on' : 'off';
+    }
+
+    setVoice(voice);
+    setAutospeak(autospeakOn);
+
+    panel.querySelectorAll<HTMLButtonElement>('.hx-voice').forEach((b) => {
+      b.addEventListener('click', () => setVoice(b.dataset.voice ?? 'Emily'));
+    });
+    autospeak.addEventListener('click', () => setAutospeak(!autospeakOn));
+
     function loadHistory() {
       try {
-        const raw = sessionStorage.getItem(STORAGE_KEY);
+        const raw = sessionStorage.getItem(HISTORY_KEY);
         if (raw) history = JSON.parse(raw);
-      } catch {
-        history = [];
-      }
+      } catch { history = []; }
     }
 
     function saveHistory() {
-      try {
-        sessionStorage.setItem(STORAGE_KEY, JSON.stringify(history.slice(-20)));
-      } catch {
-        // sessionStorage may be disabled — silently ignore
-      }
+      try { sessionStorage.setItem(HISTORY_KEY, JSON.stringify(history.slice(-20))); }
+      catch {}
     }
 
-    // Tiny markdown renderer: code fences + inline code + links + line breaks. No HTML.
     function escapeHtml(s: string): string {
       return s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]!));
     }
@@ -468,7 +592,7 @@
       let working = text.replace(/```([\w-]*)\n([\s\S]*?)```/g, (_m, _lang, code) => {
         const i = blocks.length;
         blocks.push(`<pre><code>${escapeHtml(code)}</code></pre>`);
-        return ` BLOCK${i} `;
+        return ` BLOCK${i} `;
       });
       working = escapeHtml(working);
       working = working.replace(/`([^`]+)`/g, (_m, code) => `<code>${code}</code>`);
@@ -476,47 +600,60 @@
         const safe = href.startsWith('http') ? `${href}" target="_blank" rel="noopener` : href;
         return `<a href="${safe}">${label}</a>`;
       });
+      working = working.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
       working = working.replace(/\n\n+/g, '</p><p>').replace(/\n/g, '<br/>');
       working = `<p>${working}</p>`;
-      working = working.replace(/ BLOCK(\d+) /g, (_m, i) => blocks[Number(i)] ?? '');
+      working = working.replace(/ BLOCK(\d+) /g, (_m, i) => blocks[Number(i)] ?? '');
       return working;
     }
 
-    function speakerButtonHTML(): string {
-      return `<div class="hx-chat-tools"><button type="button" class="hx-chat-speaker" data-speaker aria-label="Read aloud" data-state="idle"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg><span>Listen</span></button></div>`;
+    function listenButtonHTML(): string {
+      return `<button type="button" class="hx-listen" data-listen aria-label="Read this aloud" data-state="idle">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+      </button>`;
     }
 
-    function appendSpeakerTools(messageEl: HTMLElement, text: string) {
+    function appendListen(messageEl: HTMLElement, text: string) {
       const wrap = document.createElement('div');
-      wrap.innerHTML = speakerButtonHTML();
-      const tools = wrap.firstElementChild as HTMLElement | null;
-      if (!tools) return;
-      const button = tools.querySelector<HTMLButtonElement>('[data-speaker]');
-      if (button) button.dataset.text = text;
-      messageEl.appendChild(tools);
+      wrap.className = 'hx-msg-tools';
+      wrap.innerHTML = listenButtonHTML();
+      const btn = wrap.querySelector<HTMLButtonElement>('[data-listen]');
+      if (btn) btn.dataset.text = text;
+      messageEl.appendChild(wrap);
+      return btn;
+    }
+
+    function emptyStateHTML(): string {
+      return `<div class="hx-empty" data-empty>
+        <p class="hx-empty-h">Ask <em>anything</em> about the patterns, prompts, or workflow.</p>
+        <ul class="hx-suggest-list">
+          <li><button type="button" class="hx-suggest" data-suggest="What pattern fits a settings page that feels cluttered?">
+            <svg class="hx-suggest-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            <span>What pattern fits a cluttered settings page?</span>
+          </button></li>
+          <li><button type="button" class="hx-suggest" data-suggest="How do I install the ui-pattern-picker skill?">
+            <svg class="hx-suggest-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+            <span>How do I install the ui-pattern-picker skill?</span>
+          </button></li>
+          <li><button type="button" class="hx-suggest" data-suggest="Give me the 8-step OS as a paste-into-CLAUDE.md block.">
+            <svg class="hx-suggest-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            <span>Give me the 8-step OS as a CLAUDE.md block.</span>
+          </button></li>
+        </ul>
+      </div>`;
     }
 
     function rerender() {
       log.innerHTML = '';
       if (history.length === 0) {
-        const empty = document.createElement('div');
-        empty.className = 'hx-chat-empty';
-        empty.dataset.empty = '';
-        empty.innerHTML = `
-          <p>Ask about the patterns, prompts, or workflow.</p>
-          <ul class="hx-chat-suggestions">
-            <li><button type="button" class="hx-chat-suggest" data-suggest="What pattern fits a settings page that feels cluttered?">What pattern fits a settings page that feels cluttered?</button></li>
-            <li><button type="button" class="hx-chat-suggest" data-suggest="How do I install the ui-pattern-picker skill?">How do I install the ui-pattern-picker skill?</button></li>
-            <li><button type="button" class="hx-chat-suggest" data-suggest="Give me the 8-step OS as a paste-into-CLAUDE.md block.">Give me the 8-step OS as a paste-into-CLAUDE.md block.</button></li>
-          </ul>`;
-        log.appendChild(empty);
+        log.innerHTML = emptyStateHTML();
         return;
       }
       for (const m of history) {
         const el = document.createElement('div');
-        el.className = `hx-chat-msg ${m.role}`;
+        el.className = `hx-msg ${m.role}`;
         el.innerHTML = m.role === 'assistant' ? renderMarkdown(m.content) : escapeHtml(m.content);
-        if (m.role === 'assistant') appendSpeakerTools(el, m.content);
+        if (m.role === 'assistant') appendListen(el, m.content);
         log.appendChild(el);
       }
       log.scrollTop = log.scrollHeight;
@@ -525,23 +662,19 @@
     let activeAudio: HTMLAudioElement | null = null;
     let activeButton: HTMLButtonElement | null = null;
 
-    function resetButton(btn: HTMLButtonElement) {
-      btn.dataset.state = 'idle';
-      delete btn.dataset.disabled;
-      const label = btn.querySelector('span');
-      if (label) label.textContent = 'Listen';
+    function setBtnState(btn: HTMLButtonElement, state: 'idle' | 'loading' | 'playing') {
+      btn.dataset.state = state;
+      if (state === 'idle') delete btn.dataset.disabled;
+      else if (state === 'loading') btn.dataset.disabled = '';
     }
 
     function stopActive() {
       if (activeAudio) {
-        try {
-          activeAudio.pause();
-          activeAudio.src = '';
-        } catch {}
+        try { activeAudio.pause(); activeAudio.src = ''; } catch {}
         activeAudio = null;
       }
       if (activeButton) {
-        resetButton(activeButton);
+        setBtnState(activeButton, 'idle');
         activeButton = null;
       }
     }
@@ -549,28 +682,19 @@
     async function speak(button: HTMLButtonElement) {
       const text = button.dataset.text;
       if (!text) return;
-      if (button === activeButton) {
-        stopActive();
-        return;
-      }
+      if (button === activeButton) { stopActive(); return; }
       stopActive();
 
-      button.dataset.state = 'loading';
-      button.dataset.disabled = '';
-      const label = button.querySelector('span');
-      if (label) label.textContent = 'Loading';
+      setBtnState(button, 'loading');
 
       try {
         const res = await fetch('/api/tts', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text }),
+          body: JSON.stringify({ text, voice }),
         });
         if (res.status === 503) {
-          button.dataset.state = 'idle';
-          delete button.dataset.disabled;
-          if (label) label.textContent = 'TTS off';
-          setTimeout(() => resetButton(button), 1800);
+          setBtnState(button, 'idle');
           return;
         }
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -579,40 +703,41 @@
         const audio = new Audio(url);
         activeAudio = audio;
         activeButton = button;
-        button.dataset.state = 'playing';
-        delete button.dataset.disabled;
-        if (label) label.textContent = 'Stop';
+        setBtnState(button, 'playing');
         audio.addEventListener('ended', () => {
           URL.revokeObjectURL(url);
           if (activeButton === button) {
-            resetButton(button);
-            activeAudio = null;
-            activeButton = null;
+            setBtnState(button, 'idle');
+            activeAudio = null; activeButton = null;
           }
         });
         audio.addEventListener('error', () => {
           URL.revokeObjectURL(url);
           if (activeButton === button) {
-            resetButton(button);
-            activeAudio = null;
-            activeButton = null;
+            setBtnState(button, 'idle');
+            activeAudio = null; activeButton = null;
           }
         });
         await audio.play();
       } catch (err) {
         console.error('tts', err);
-        button.dataset.state = 'idle';
-        delete button.dataset.disabled;
-        if (label) label.textContent = 'Failed';
-        setTimeout(() => resetButton(button), 1800);
+        setBtnState(button, 'idle');
       }
     }
 
     log.addEventListener('click', (e) => {
       const t = e.target;
       if (!(t instanceof HTMLElement)) return;
-      const btn = t.closest('[data-speaker]') as HTMLButtonElement | null;
-      if (btn) speak(btn);
+      const listenBtn = t.closest('[data-listen]') as HTMLButtonElement | null;
+      if (listenBtn) { speak(listenBtn); return; }
+      const suggest = t.closest('.hx-suggest') as HTMLElement | null;
+      if (suggest) {
+        const text = suggest.getAttribute('data-suggest') ?? '';
+        if (text) {
+          input.value = text;
+          form.requestSubmit();
+        }
+      }
     });
 
     function open() {
@@ -626,6 +751,7 @@
       root.dataset.state = 'closed';
       launcher.setAttribute('aria-expanded', 'false');
       if (inFlight) inFlight.abort();
+      stopActive();
       launcher.focus();
     }
 
@@ -634,6 +760,7 @@
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && root.dataset.state === 'open') close();
     });
+
     clearBtn.addEventListener('click', () => {
       if (inFlight) inFlight.abort();
       stopActive();
@@ -641,17 +768,6 @@
       saveHistory();
       rerender();
       input.focus();
-    });
-
-    log.addEventListener('click', (e) => {
-      const t = e.target;
-      if (t instanceof HTMLElement && t.classList.contains('hx-chat-suggest')) {
-        const text = t.dataset.suggest ?? '';
-        if (text) {
-          input.value = text;
-          form.requestSubmit();
-        }
-      }
     });
 
     input.addEventListener('input', () => {
@@ -675,16 +791,17 @@
       input.value = '';
       input.style.height = 'auto';
 
-      // Render user msg + placeholder for assistant streaming
-      const userEl = document.createElement('div');
-      userEl.className = 'hx-chat-msg user';
-      userEl.textContent = text;
       const empty = log.querySelector('[data-empty]');
       if (empty) empty.remove();
+
+      const userEl = document.createElement('div');
+      userEl.className = 'hx-msg user';
+      userEl.textContent = text;
       log.appendChild(userEl);
+
       const assistantEl = document.createElement('div');
-      assistantEl.className = 'hx-chat-msg assistant';
-      assistantEl.innerHTML = '<p><span class="hx-chat-cursor"></span></p>';
+      assistantEl.className = 'hx-msg assistant';
+      assistantEl.innerHTML = '<p><span class="hx-cur"></span></p>';
       log.appendChild(assistantEl);
       log.scrollTop = log.scrollHeight;
 
@@ -702,14 +819,12 @@
         if (res.status === 503) {
           assistantEl.classList.add('error');
           assistantEl.textContent = 'Chat is not configured on this deployment. Set ANTHROPIC_API_KEY to enable.';
-          history.pop(); // drop the user msg from durable history since we never got a reply
+          history.pop();
           saveHistory();
           inFlight = null;
           return;
         }
-        if (!res.ok || !res.body) {
-          throw new Error(`HTTP ${res.status}`);
-        }
+        if (!res.ok || !res.body) throw new Error(`HTTP ${res.status}`);
 
         const reader = res.body.getReader();
         const decoder = new TextDecoder();
@@ -736,7 +851,7 @@
               const parsed = JSON.parse(payload) as { text?: string; error?: string };
               if (parsed.text) {
                 assistantText += parsed.text;
-                assistantEl.innerHTML = renderMarkdown(assistantText) + '<span class="hx-chat-cursor"></span>';
+                assistantEl.innerHTML = renderMarkdown(assistantText) + '<span class="hx-cur"></span>';
                 log.scrollTop = log.scrollHeight;
               } else if (parsed.error) {
                 throw new Error(parsed.error);
@@ -747,7 +862,13 @@
           }
         }
         assistantEl.innerHTML = renderMarkdown(assistantText);
-        if (assistantText) appendSpeakerTools(assistantEl, assistantText);
+        if (assistantText) {
+          const listen = appendListen(assistantEl, assistantText);
+          if (autospeakOn && listen) {
+            // Auto-trigger TTS for the new message
+            setTimeout(() => speak(listen), 200);
+          }
+        }
       } catch (err) {
         if ((err as Error).name === 'AbortError') {
           assistantEl.innerHTML = renderMarkdown(assistantText) || '<em>cancelled</em>';

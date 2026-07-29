@@ -11,6 +11,7 @@
  */
 
 import type { APIRoute } from 'astro';
+import { guard } from '../../lib/guard';
 
 export const prerender = false;
 
@@ -119,7 +120,10 @@ async function resolveVoiceId(apiKey: string, requested?: string): Promise<strin
   return null;
 }
 
-export const POST: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async ({ request, clientAddress }) => {
+  const refused = guard(request, 'tts', clientAddress);
+  if (refused) return refused;
+
   const apiKey = import.meta.env.API_ELEVENLABS;
   if (!apiKey) {
     return new Response(JSON.stringify({ error: 'tts_not_configured' }), {

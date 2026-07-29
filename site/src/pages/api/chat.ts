@@ -1,15 +1,23 @@
 /**
  * POST /api/chat — streaming chat backed by Claude Haiku 4.5 with prompt caching.
  *
- * Request body: { messages: Array<{ role: 'user' | 'assistant', content: string }> }
- * Response: text/event-stream — `data: { "text": "chunk" }` per token, ends with `data: [DONE]`.
+ * Request body: { messages: Array<{ role: 'user' | 'assistant', content: string, sig?: string }> }
+ * Response: text/event-stream — `data: { "text": "chunk" }` per token, then
+ *           `data: { "sig": "<hmac>" }` for the completed reply, ends with `data: [DONE]`.
  *
  * Returns 503 if ANTHROPIC_API_KEY is not set so the build doesn't depend on configured secrets.
- * History is capped at 12 messages and max_tokens at 600 for cost control.
+ * History is capped at 12 messages and max_tokens at 600 for cost control; origin +
+ * per-IP rate limiting live in src/lib/guard.ts.
+ *
+ * Assistant turns replayed by the client must carry the HMAC this route issued —
+ * see src/lib/signing.ts. Unsigned ones are dropped so a caller cannot fabricate
+ * what the model previously "said".
  */
 
 import type { APIRoute } from 'astro';
 import Anthropic from '@anthropic-ai/sdk';
+import { guard } from '../../lib/guard';
+import { sign, verify } from '../../lib/signing';
 
 export const prerender = false;
 
@@ -77,24 +85,51 @@ interface IncomingMessage {
   content: string;
 }
 
-function sanitize(messages: unknown): IncomingMessage[] | null {
+/**
+ * Validates the client's history and strips any assistant turn this server didn't
+ * sign. Dropping a turn can leave two user turns adjacent, so same-role neighbours
+ * are merged afterwards — the Messages API requires alternating roles.
+ */
+async function sanitize(messages: unknown): Promise<IncomingMessage[] | null> {
   if (!Array.isArray(messages)) return null;
-  const out: IncomingMessage[] = [];
+
+  const kept: IncomingMessage[] = [];
   for (const m of messages) {
     if (!m || typeof m !== 'object') return null;
     const role = (m as { role?: string }).role;
     const content = (m as { content?: string }).content;
     if ((role !== 'user' && role !== 'assistant') || typeof content !== 'string') return null;
     if (content.length > MAX_USER_LEN) return null;
-    out.push({ role, content: content.trim() });
+
+    const trimmed = content.trim();
+    if (role === 'assistant') {
+      // Forged or stale (pre-signing / rotated-secret) assistant turns are discarded.
+      if (!(await verify(trimmed, (m as { sig?: unknown }).sig))) continue;
+    }
+    kept.push({ role, content: trimmed });
   }
-  if (out.length === 0) return null;
+
   // Conversation must start with a user turn.
-  while (out.length > 0 && out[0].role !== 'user') out.shift();
-  return out.slice(-HISTORY_LIMIT);
+  while (kept.length > 0 && kept[0].role !== 'user') kept.shift();
+
+  const merged: IncomingMessage[] = [];
+  for (const m of kept) {
+    const last = merged[merged.length - 1];
+    if (last && last.role === m.role) last.content = `${last.content}\n\n${m.content}`;
+    else merged.push({ ...m });
+  }
+
+  const capped = merged.slice(-HISTORY_LIMIT);
+  // The cap can slice into the middle of a pair — re-anchor on a user turn.
+  while (capped.length > 0 && capped[0].role !== 'user') capped.shift();
+  if (capped.length === 0) return null;
+  return capped;
 }
 
-export const POST: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async ({ request, clientAddress }) => {
+  const refused = guard(request, 'chat', clientAddress);
+  if (refused) return refused;
+
   const apiKey = import.meta.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
     return new Response(JSON.stringify({ error: 'chat_not_configured' }), {
@@ -113,7 +148,7 @@ export const POST: APIRoute = async ({ request }) => {
     });
   }
 
-  const messages = sanitize((body as { messages?: unknown }).messages);
+  const messages = await sanitize((body as { messages?: unknown }).messages);
   if (!messages) {
     return new Response(JSON.stringify({ error: 'invalid_messages' }), {
       status: 400,
@@ -129,6 +164,8 @@ export const POST: APIRoute = async ({ request }) => {
       const send = (payload: object) => {
         controller.enqueue(encoder.encode(`data: ${JSON.stringify(payload)}\n\n`));
       };
+
+      let replyText = '';
 
       try {
         const stream = anthropic.messages.stream({
@@ -146,18 +183,27 @@ export const POST: APIRoute = async ({ request }) => {
 
         for await (const event of stream) {
           if (event.type === 'content_block_delta' && event.delta.type === 'text_delta') {
+            replyText += event.delta.text;
             send({ text: event.delta.text });
           } else if (event.type === 'message_stop') {
             // final usage info — useful for debugging but not required by the client
           }
         }
 
+        // Sign the completed reply so the client can replay it as trusted history.
+        const trimmed = replyText.trim();
+        if (trimmed) {
+          const signature = await sign(trimmed);
+          if (signature) send({ sig: signature });
+        }
+
         controller.enqueue(encoder.encode('data: [DONE]\n\n'));
         controller.close();
       } catch (err) {
+        // Upstream detail stays server-side: it can disclose account quota and
+        // rate-limit state to an unauthenticated caller.
         console.error('chat stream error', err);
-        const message = err instanceof Error ? err.message : 'stream error';
-        send({ error: message });
+        send({ error: 'upstream_error' });
         controller.enqueue(encoder.encode('data: [DONE]\n\n'));
         controller.close();
       }

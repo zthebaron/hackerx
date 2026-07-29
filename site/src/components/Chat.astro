@@ -626,7 +626,9 @@
     const AUTOSPEAK_KEY = 'hx_autospeak';
     const VOICES = ['Lucy', 'Adam', 'Rachel'] as const;
 
-    type Msg = { role: 'user' | 'assistant'; content: string };
+    // `sig` is the HMAC /api/chat issues for its own replies. It rides along in
+    // history so the server can tell a real assistant turn from a forged one.
+    type Msg = { role: 'user' | 'assistant'; content: string; sig?: string };
     let history: Msg[] = [];
     let inFlight: AbortController | null = null;
 
@@ -788,7 +790,8 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ text, voice }),
         });
-        if (res.status === 503) {
+        if (res.status === 503 || res.status === 429) {
+          // Not configured, or the read-aloud budget is spent — fail quiet.
           setBtnState(button, 'idle');
           return;
         }
@@ -902,6 +905,7 @@
 
       inFlight = new AbortController();
       let assistantText = '';
+      let assistantSig: string | undefined;
 
       try {
         const res = await fetch('/api/chat', {
@@ -914,6 +918,16 @@
         if (res.status === 503) {
           assistantEl.classList.add('error');
           assistantEl.textContent = 'Chat is not configured on this deployment. Set ANTHROPIC_API_KEY to enable.';
+          history.pop();
+          saveHistory();
+          inFlight = null;
+          return;
+        }
+        if (res.status === 429) {
+          const retry = await res.json().catch(() => ({ retryAfter: 60 }));
+          const secs = Number(retry?.retryAfter) || 60;
+          assistantEl.classList.add('error');
+          assistantEl.textContent = `You're sending messages faster than the limit allows. Try again in about ${Math.ceil(secs / 60)} minute${secs > 60 ? 's' : ''}.`;
           history.pop();
           saveHistory();
           inFlight = null;
@@ -938,13 +952,17 @@
             if (!line) continue;
             const payload = line.slice(6).trim();
             if (payload === '[DONE]') {
-              if (assistantText) history.push({ role: 'assistant', content: assistantText });
+              if (assistantText) {
+                history.push({ role: 'assistant', content: assistantText, sig: assistantSig });
+              }
               saveHistory();
               continue;
             }
             try {
-              const parsed = JSON.parse(payload) as { text?: string; error?: string };
-              if (parsed.text) {
+              const parsed = JSON.parse(payload) as { text?: string; error?: string; sig?: string };
+              if (parsed.sig) {
+                assistantSig = parsed.sig;
+              } else if (parsed.text) {
                 assistantText += parsed.text;
                 assistantEl.innerHTML = renderMarkdown(assistantText) + '<span class="hx-cur"></span>';
                 log.scrollTop = log.scrollHeight;
@@ -1068,10 +1086,12 @@
       fd.set('audio', blob, 'voice.webm');
       try {
         const res = await fetch('/api/transcribe', { method: 'POST', body: fd });
-        if (res.status === 503) {
+        if (res.status === 503 || res.status === 429) {
           setMicState('idle');
           input.value = (input.value + ' ').trim();
-          input.placeholder = 'Voice-in is not configured (set API_ELEVENLABS).';
+          input.placeholder = res.status === 429
+            ? 'Voice-in limit reached — try again shortly.'
+            : 'Voice-in is not configured (set API_ELEVENLABS).';
           setTimeout(() => { input.placeholder = 'Ask the HackerX assistant…'; }, 3500);
           return;
         }

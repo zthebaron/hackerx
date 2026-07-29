@@ -11,13 +11,17 @@
  */
 
 import type { APIRoute } from 'astro';
+import { guard } from '../../lib/guard';
 
 export const prerender = false;
 
 const STT_MODEL = 'scribe_v1';
 const MAX_AUDIO_BYTES = 24 * 1024 * 1024; // 24 MB ceiling
 
-export const POST: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async ({ request, clientAddress }) => {
+  const refused = guard(request, 'transcribe', clientAddress);
+  if (refused) return refused;
+
   const apiKey = import.meta.env.API_ELEVENLABS;
   if (!apiKey) {
     return new Response(JSON.stringify({ error: 'transcribe_not_configured' }), {
